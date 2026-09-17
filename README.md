@@ -4,12 +4,24 @@
 
 **End-to-end MLOps for satellite land-cover classification — from experiment tracking to a Kubernetes service and an offline edge device.**
 
+[![Status](https://img.shields.io/badge/status-in%20development-orange)](#the-ml-lifecycle-stage-by-stage)
+[![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![ONNX](https://img.shields.io/badge/ONNX%20Runtime-005CED?logo=onnx&logoColor=white)](https://onnxruntime.ai/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/)
+[![Terraform](https://img.shields.io/badge/Terraform-844FBA?logo=terraform&logoColor=white)](https://www.terraform.io/)
+[![AWS](https://img.shields.io/badge/AWS-232F3E?logo=amazonwebservices&logoColor=white)](https://aws.amazon.com/)
+[![MLflow](https://img.shields.io/badge/MLflow-0194E2?logo=mlflow&logoColor=white)](https://mlflow.org/)
+[![DVC](https://img.shields.io/badge/DVC-13ADC7?logo=dvc&logoColor=white)](https://dvc.org/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-D7FF64?logo=ruff&logoColor=black)](https://github.com/astral-sh/ruff)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+<!-- Enable once the workflows exist (stage 4 / stage 8):
 [![CI](https://github.com/alichr/orbiteye/actions/workflows/ci.yml/badge.svg)](https://github.com/alichr/orbiteye/actions/workflows/ci.yml)
 [![Release](https://github.com/alichr/orbiteye/actions/workflows/release.yml/badge.svg)](https://github.com/alichr/orbiteye/actions/workflows/release.yml)
 [![Edge build (arm64)](https://github.com/alichr/orbiteye/actions/workflows/edge.yml/badge.svg)](https://github.com/alichr/orbiteye/actions/workflows/edge.yml)
-[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](pyproject.toml)
-[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+-->
 
 [Architecture](#architecture) · [Dataset](#the-data) · [Skills demonstrated](#skills-demonstrated) · [Results](#results) · [Quickstart](#quickstart) · [Lifecycle](#the-ml-lifecycle-stage-by-stage) · [Design decisions](#design-decisions) · [Docs](docs/)
 

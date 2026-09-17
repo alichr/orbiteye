@@ -11,7 +11,11 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[Architecture](#architecture) · [Skills demonstrated](#skills-demonstrated) · [Results](#results) · [Quickstart](#quickstart) · [Lifecycle](#the-ml-lifecycle-stage-by-stage) · [Design decisions](#design-decisions) · [Docs](docs/)
+[Architecture](#architecture) · [Dataset](#the-data) · [Skills demonstrated](#skills-demonstrated) · [Results](#results) · [Quickstart](#quickstart) · [Lifecycle](#the-ml-lifecycle-stage-by-stage) · [Design decisions](#design-decisions) · [Docs](docs/)
+
+<br/>
+
+<img src="docs/assets/banner.png" alt="One Sentinel-2 sample patch for each of the ten EuroSAT land-cover classes" width="100%"/>
 
 </div>
 
@@ -77,6 +81,27 @@ flowchart LR
     MLF -- sign bundle --> S3 --> GC --> OB
     OB -- telemetry --> GC --> S3
 ```
+
+---
+
+## The data
+
+[EuroSAT](https://github.com/phelber/EuroSAT) (Helber et al., 2019) is 27,000 georeferenced Sentinel-2 patches covering 34 European countries, 64 × 64 px at 10 m ground resolution, labelled with ten land-cover classes. It is small enough to train on a laptop and realistic enough to exercise every part of the pipeline: class imbalance, seasonal and atmospheric shift for the drift story, and a real remote-sensing modality for the onboard-satellite edge stage.
+
+<div align="center">
+<img src="docs/assets/eurosat_samples.png" alt="Grid of random EuroSAT samples, six per class, with class names and image counts" width="820"/>
+</div>
+
+| Property | Value |
+|---|---|
+| Source | Sentinel-2 Level-2A, RGB bands (B04, B03, B02) |
+| Patches | 27,000 (2,000 – 3,000 per class) |
+| Resolution | 64 × 64 px · 10 m/px |
+| Classes | Annual crop, Forest, Herbaceous vegetation, Highway, Industrial, Pasture, Permanent crop, Residential, River, Sea/lake |
+| Split | 70 / 15 / 15 train / val / test, stratified, frozen and versioned with DVC |
+| Licence | CC BY 4.0 |
+
+Data never lives in git. It is versioned with DVC and pulled from S3 (MinIO locally); the exact split used for every reported number is pinned by a commit hash.
 
 ---
 

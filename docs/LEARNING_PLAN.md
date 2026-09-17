@@ -49,6 +49,53 @@ The ML is intentionally boring. All the learning is in the lifecycle around it.
 
 ---
 
+
+## Before you start: prerequisites, setup, and how to study
+
+**Assumed:** you can write Python comfortably, know what a CNN is, and have trained a model in a notebook before. Everything else is taught here.
+
+### One-time Mac setup (do this on day 1)
+
+```bash
+# package manager + core tools
+brew install git gh uv pyenv tmux htop jq yq tree wget
+brew install --cask docker            # Docker Desktop (enable "Use Rosetta" + increase RAM to 8 GB in Settings)
+brew install kind kubectl helm k6 terraform awscli trivy
+brew install --cask google-cloud-sdk  # gcloud
+brew install azure-cli
+brew install qemu                     # needed for stage 8 ARM64 emulation
+
+# python toolchain for the repo
+uv python install 3.12
+uv venv --python 3.12 && source .venv/bin/activate
+uv pip install torch torchvision mlflow dvc[s3] hydra-core pytest ruff pre-commit fastapi uvicorn onnx onnxruntime pillow scikit-learn
+
+# sanity
+docker run --rm hello-world && kind version && kubectl version --client && terraform -version
+```
+
+Create free accounts now so they are ready when needed: GitHub (done), AWS (free tier, set a **US$50 budget alarm immediately**), GCP (US$300 credits), Azure (US$200 credits), Docker Hub (optional), Grafana Cloud (optional).
+
+### How to study each stage (repeat every stage)
+
+1. **Read the concepts list first** ("Core concepts you must be able to explain"). For each item write 2–4 sentences in your own words in `docs/notes/stage-N.md`. If you cannot, read the linked official doc until you can. This is the most important habit in the plan.
+2. **Build the artefacts** in the "Build" list. Type the core pieces yourself; use an AI assistant to unblock, then rewrite the piece from memory once.
+3. **Do the exercises**. They are designed to be slightly annoying, because that is where understanding forms.
+4. **Break it** (see "Common pitfalls & break-it drills"). Interview questions are almost always "what happens when X goes wrong".
+5. **Answer the interview questions out loud**, without notes, and record yourself once. Fix the gaps.
+6. **Tick the checklist**, update the status table in the root `README.md`, and write a 10-line "what I learned" at the end of `docs/notes/stage-N.md`. Commit.
+
+### Weekly rhythm (8–10 h)
+
+| Day | Time | What |
+|---|---|---|
+| Mon | 2 h | Concepts + notes |
+| Tue–Thu | 5–6 h | Build + exercises |
+| Fri | 1 h | Break-it drills |
+| Sat | 1 h | Interview questions aloud, checklist, README status, commit |
+
+---
+
 ## Stage 1 — Linux + Git: the professional repo skeleton  (Week 1)
 
 **Skill claimed:** Git, Linux
@@ -82,6 +129,41 @@ orbiteye/
 └── README.md
 ```
 
+
+**Core concepts you must be able to explain:**
+- Linux: filesystem hierarchy (`/etc`, `/var`, `/opt`, `/proc`), users/groups/permissions and `sudo`, processes and signals (`SIGTERM` vs `SIGKILL`), stdin/stdout/stderr and redirection, exit codes, environment variables vs shell variables, `PATH`, symlinks, what a daemon is, `systemd` units and `journalctl`, SSH keys and `~/.ssh/config`, package managers (`apt`), disk usage (`df`, `du`), networking basics (`ip`, `ss`, `curl`, ports, `/etc/hosts`), cron syntax.
+- Git: the three areas (working tree, index, HEAD), commits as snapshots, branches as pointers, fast-forward vs merge commit vs rebase, detached HEAD, `reflog`, remotes and tracking branches, tags (lightweight vs annotated), `.gitignore` semantics, why large binaries do not belong in git, what a PR actually is.
+- Python packaging: `pyproject.toml`, editable installs, lockfiles and why reproducibility needs them, virtual environments, entry points.
+
+**Hands-on exercises:**
+1. On the EC2 box, create a user `orbiteye`, give it passwordless `sudo` for one command only, and lock SSH to key-only auth. Verify with `sshd -T`.
+2. Write a `systemd` unit that runs a Python script logging the time every 10 s; make it start on boot; read its logs with `journalctl -u`; make it restart on failure; kill it with `kill -9` and watch it come back.
+3. Write a one-line pipeline that finds the 5 largest files under `/var` and prints them in MB.
+4. Git: create a messy branch with 6 commits, interactively squash into 2 clean commits, then use `git reflog` to recover the original 6 after "losing" them. (Interactive rebase must be done in your own terminal, not through an AI tool.)
+5. Deliberately commit a 50 MB file, push, then remove it from history with `git filter-repo` and force-push. Now you know why data goes in DVC.
+6. Set up `pre-commit` with `ruff`, `ruff-format`, `end-of-file-fixer`, `check-added-large-files`.
+
+**Common pitfalls & break-it drills:**
+- Locking yourself out of SSH by breaking `sshd_config`: always test in a second session before closing the first.
+- `git push --force` on a shared branch: learn `--force-with-lease`.
+- Running things as root inside containers/VMs "because it works".
+- Drill: fill the disk on the VM with `fallocate` until things break; find the culprit with `du`; clean up.
+
+**Interview questions to be able to answer:**
+- What is the difference between `git merge` and `git rebase`, and when would you forbid rebase?
+- A process ignores `Ctrl-C`. What do you do, step by step?
+- How does SSH key authentication work? What is in `authorized_keys`?
+- What happens at boot on a `systemd` Linux system? How do you make a service start on boot?
+- Why does a lockfile matter if `requirements.txt` already pins versions?
+
+**Resources:**
+- *The Linux Command Line*, W. Shotts — free: https://linuxcommand.org/tlcl.php (ch. 1–10, 14–17, 24–26)
+- MIT "The Missing Semester": https://missing.csail.mit.edu/ (shell, editors, data wrangling, command-line env, git)
+- *Pro Git* book, free: https://git-scm.com/book/en/v2 (ch. 1–3, 5, 7.6 rewriting history)
+- systemd for administrators: https://www.freedesktop.org/wiki/Software/systemd/ and `man systemd.service`
+- Conventional Commits: https://www.conventionalcommits.org/
+- `uv` docs: https://docs.astral.sh/uv/  ·  pre-commit: https://pre-commit.com/
+
 **You can claim it when:**
 - [ ] Repo on GitHub, protected `main`, every change via PR, ≥ 20 meaningful commits with conventional messages.
 - [ ] Pre-commit runs `ruff` + `pytest` locally.
@@ -105,6 +187,46 @@ orbiteye/
 - `dvc repro` reproduces the whole pipeline from raw data.
 - A baseline reaching ~95% accuracy (EuroSAT is easy; that's fine).
 
+
+**Core concepts you must be able to explain:**
+- Problem framing: business metric vs model metric vs proxy metric; why macro-F1 over accuracy for imbalanced classes; offline vs online evaluation; what a "frozen evaluation set" is and why it must never be touched.
+- Data: train/val/test leakage (especially spatial leakage in satellite imagery: neighbouring patches), stratified splits, data cards, dataset versioning vs code versioning, content-addressable storage (how DVC stores files by hash).
+- DVC: `.dvc` files, `dvc.yaml` stages with `deps`/`outs`/`params`/`metrics`, the cache, remotes, `dvc repro` dependency graph, `dvc exp`.
+- MLflow: runs, experiments, params/metrics/artefacts, the tracking server vs backend store vs artefact store, the model registry and stage transitions, `mlflow.pyfunc`, model signatures.
+- Training engineering: seeds and nondeterminism (cuDNN, dataloader workers), config-as-code, checkpointing, early stopping, learning-rate schedules, transfer learning (freeze vs fine-tune).
+- Testing ML code: shape/dtype tests, a 2-batch overfit test (loss → ~0), invariance tests (flip augmentation shouldn't change class), data-contract tests, evaluation-metric tests against sklearn.
+
+**Hands-on exercises:**
+1. Write `DESIGN.md`: one page, sections *Problem, Users, Metric, Data, Baseline, Risks, Evaluation plan, Failure modes*. Explicitly list "haze / seasonal shift / new sensor" as risks (used in stage 7).
+2. Build the DVC pipeline with three stages and prove `dvc repro` skips unchanged stages; change one hyper-parameter in `params.yaml` and show only `train`+`evaluate` rerun.
+3. Run an MLflow sweep of 8 runs over LR × augmentation; make a parallel-coordinates plot in the UI; register the best model and promote it to Production with a note.
+4. Add `mlflow.models.infer_signature` and load the registered model back with `mlflow.pyfunc.load_model("models:/orbiteye/Production")` in a fresh process.
+5. Write the six tests listed above; make the overfit test fail on purpose by zeroing the learning rate.
+6. Reproduce a run from two weeks ago (or from another branch) using only its commit hash.
+
+**Common pitfalls & break-it drills:**
+- Committing `data/` to git; forgetting `dvc push`; a teammate (future you) doing `dvc pull` and getting nothing.
+- Random split that puts adjacent patches in train and test → inflated accuracy. Check EuroSAT filenames and document your split rule.
+- MLflow artefacts written to a local path that a container cannot see. Understand `--default-artifact-root`.
+- Drill: delete `.dvc/cache`, then `dvc pull`; corrupt one file in the cache and see DVC detect it.
+
+**Interview questions to be able to answer:**
+- How do you version a 50 GB dataset alongside code? What does DVC store in git?
+- Your model's offline F1 is 0.95 but users complain. List five reasons.
+- What is the difference between MLflow's tracking server, backend store and artefact store?
+- How do you make a training run reproducible? What can you not control?
+- Why is accuracy a bad metric here, and what would you monitor in production instead?
+
+**Resources:**
+- DVC Get Started (do all of it): https://dvc.org/doc/start  ·  DVC pipelines: https://dvc.org/doc/user-guide/pipelines
+- MLflow Tracking: https://mlflow.org/docs/latest/tracking.html  ·  Model Registry: https://mlflow.org/docs/latest/model-registry.html
+- Hydra tutorial: https://hydra.cc/docs/tutorials/intro/
+- *Designing Machine Learning Systems*, C. Huyen — ch. 2 (framing), 4 (data), 6 (evaluation)
+- Made With ML (MLOps course, free): https://madewithml.com/
+- Google "Rules of ML": https://developers.google.com/machine-learning/guides/rules-of-ml
+- Model cards paper: https://arxiv.org/abs/1810.03993
+- PyTorch reproducibility: https://pytorch.org/docs/stable/notes/randomness.html
+
 **You can claim it when:**
 - [ ] `git checkout <commit> && dvc pull && dvc repro` rebuilds any past result.
 - [ ] MLflow UI shows ≥ 10 tracked runs and a registered model with a version in "Production".
@@ -126,6 +248,47 @@ orbiteye/
 - `docker-compose.yml` that starts MLflow server + Postgres + MinIO (S3-compatible) locally so your tracking stack is containerised too.
 - `make train-docker` runs training inside the container with data mounted as a volume.
 
+
+**Core concepts you must be able to explain:**
+- What a container actually is (namespaces + cgroups + a union filesystem), and how that differs from a VM.
+- Image layers, the build cache and cache invalidation rules, `COPY` ordering, `.dockerignore`, multi-stage builds, `ARG` vs `ENV`, `ENTRYPOINT` vs `CMD` (exec form vs shell form, and PID 1 / signal handling), `USER`, `HEALTHCHECK`, `WORKDIR`.
+- Storage: volumes vs bind mounts vs tmpfs; what happens to data when a container is removed.
+- Networking: bridge network, port publishing, container DNS in `docker compose`.
+- Registries, tags vs digests, why `latest` is dangerous, image provenance and scanning.
+- Docker Desktop on Mac runs a Linux VM; implications for performance, file sharing and `--platform`.
+- `docker compose`: services, depends_on + healthchecks, `.env`, profiles.
+
+**Hands-on exercises:**
+1. Build the serving image three ways and record size + build time: (a) `python:3.12` single stage, (b) `python:3.12-slim` multi-stage, (c) same with `uv` and no cache dirs. Put the table in `docker/README.md`.
+2. Change one line of Python and rebuild: which layers rebuild? Reorder the Dockerfile until only the last layer does.
+3. Run the container with `docker run` and press `Ctrl-C`: does it stop instantly? Fix it with exec-form `ENTRYPOINT` (or `tini`), and explain why.
+4. Run the serving container as a non-root user with a read-only root filesystem (`--read-only --tmpfs /tmp`).
+5. `docker compose up` the MLflow + Postgres + MinIO stack, point `train.py` at it, and verify artefacts land in MinIO's bucket.
+6. Scan with `trivy image`, fix at least one finding by bumping a base image, and pin the base image by digest.
+7. Build a multi-arch image (`linux/amd64,linux/arm64`) with `buildx` and inspect the manifest list. (Preview of stage 8.)
+
+**Common pitfalls & break-it drills:**
+- Copying the whole repo (including `data/` and `.venv/`) into the build context: 5 GB context, 10-minute builds.
+- Installing PyTorch with CUDA wheels into a CPU serving image: +2 GB for nothing. Use the CPU index URL.
+- Secrets baked into layers via `ENV` or `COPY .env`. Use build secrets or runtime env.
+- Drill: `docker system df`, then `docker system prune`; explain what was safe to delete.
+
+**Interview questions to be able to answer:**
+- Walk me through what happens when you run `docker run -p 8000:8000 image`.
+- Why is your image 900 MB and not 3 GB? What would you do to get it under 500 MB?
+- What is the difference between `CMD` and `ENTRYPOINT`? What is PID 1 and why does it matter?
+- How do you get a secret into a container securely at build time and at run time?
+- Why would you pin by digest rather than tag?
+
+**Resources:**
+- Docker docs "Get started" + "Build with Docker" guide: https://docs.docker.com/get-started/ and https://docs.docker.com/build/
+- Dockerfile best practices: https://docs.docker.com/build/building/best-practices/
+- Multi-stage builds: https://docs.docker.com/build/building/multi-stage/  ·  buildx multi-platform: https://docs.docker.com/build/building/multi-platform/
+- *Docker Deep Dive*, N. Poulton (any recent edition)
+- Trivy: https://aquasecurity.github.io/trivy/
+- Julia Evans, "How containers work" zine (excellent on namespaces/cgroups): https://wizardzines.com/zines/containers/
+- PyTorch CPU wheels: https://pytorch.org/get-started/locally/
+
 **You can claim it when:**
 - [ ] Serving image < 1 GB, trains/serves from a clean machine with only Docker installed.
 - [ ] You can explain (and have written in the README) why each layer is ordered as it is and what the cache hit rate is on a code-only change.
@@ -146,6 +309,46 @@ orbiteye/
 **Build:**
 - `.github/workflows/ci.yml` (on PR), `release.yml` (on tag), `nightly-train.yml` (scheduled small retrain + MLflow log; this feeds "continuous training").
 - A `CML`-style PR comment that posts the confusion matrix and metrics diff versus `main`.
+
+
+**Core concepts you must be able to explain:**
+- CI vs CD vs continuous deployment; the deployment pipeline as a series of quality gates; "shift left".
+- GitHub Actions model: workflows, events/triggers (`push`, `pull_request`, `schedule`, `workflow_dispatch`, `tags`), jobs, runners, steps, actions vs `run`, `needs`, matrices, `concurrency`, caching, artefacts, secrets vs variables, environments and required reviewers, permissions (`GITHUB_TOKEN` scopes), reusable workflows and composite actions.
+- ML-specific gates: data contracts, smoke training, quality gate against a frozen eval set, comparing metrics to `main`, model card generation.
+- Container CI: `docker/build-push-action`, layer caching with `cache-from/to: type=gha`, semantic versioning from tags, image labels (OCI annotations) linking image → commit.
+- Continuous training: scheduled retraining, triggered retraining (from monitoring in stage 7), and why humans still approve promotion.
+- Security: least-privilege tokens, pinning actions by SHA, OIDC to cloud (stage 5), Dependabot.
+
+**Hands-on exercises:**
+1. Write `ci.yml` with jobs `lint → test → smoke-train → quality-gate → build`. Make `quality-gate` download the frozen eval set from the DVC remote, evaluate the model trained in `smoke-train` on a tiny subset, and fail below a threshold you set. Use `needs:` and job outputs.
+2. Cache `uv`/pip and Docker layers; measure pipeline time before/after and write it down.
+3. Add a PR comment step that posts metrics + confusion matrix image (use `cml` or a 20-line script with `gh api`).
+4. Write `release.yml` triggered on tags `v*.*.*`: build multi-arch image, tag with version + SHA, push to GHCR, create a GitHub Release with the metrics JSON attached.
+5. Write `nightly-train.yml` on `schedule` + `workflow_dispatch` that retrains on full data (CPU, few epochs), logs to MLflow, and opens a PR if the new model beats Production.
+6. Turn on branch protection: required checks, no direct pushes, linear history. Try to push to `main` directly and get rejected.
+7. Pin every third-party action to a commit SHA; enable Dependabot for actions and pip.
+
+**Common pitfalls & break-it drills:**
+- `pull_request` from forks cannot see secrets; understand `pull_request_target` risks.
+- Flaky tests caused by nondeterministic training: seed, use tiny fixed subsets, assert ranges not exact values.
+- A 40-minute pipeline nobody waits for; keep PR CI under 10 minutes, push heavy work to nightly.
+- Drill: intentionally break the quality gate with a bad config PR; watch it block; fix; merge.
+
+**Interview questions to be able to answer:**
+- What does your CI pipeline do for an ML PR that it wouldn't for a normal Python PR?
+- How do you stop a model that is worse than the current one from being deployed?
+- How do you pass an artefact between jobs? Between workflows?
+- How would you roll back a release produced by your pipeline?
+- Why pin actions by SHA?
+
+**Resources:**
+- GitHub Actions docs (read "Writing workflows" fully): https://docs.github.com/en/actions
+- Workflow syntax reference: https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions
+- Security hardening for Actions: https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions
+- docker/build-push-action: https://github.com/docker/build-push-action  ·  GHA cache: https://docs.docker.com/build/cache/backends/gha/
+- CML (ML in CI): https://cml.dev/doc
+- Google "MLOps: Continuous delivery and automation pipelines in ML": https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning
+- *Continuous Delivery*, Humble & Farley — ch. 5 (deployment pipeline)
 
 **You can claim it when:**
 - [ ] A PR that lowers accuracy below threshold is automatically blocked.
@@ -183,6 +386,52 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 - DVC remote = S3; CI uses OIDC role to pull data and push images to ECR.
 - One training run on a CPU EC2 instance (e.g. `c6i.xlarge`) launched from your Terraform template, logged to the remote MLflow.
 
+
+**Core concepts you must be able to explain:**
+- Shared-responsibility model; regions and availability zones; the three service tiers (IaaS/PaaS/SaaS) and where EC2, EKS, Cloud Run, SageMaker sit.
+- IAM properly: principals, policies (identity vs resource), roles and trust policies, `AssumeRole`, instance profiles, least privilege, why access keys on a laptop are a smell, OIDC federation from GitHub.
+- Networking basics: VPC, subnets (public/private), route tables, internet gateway, NAT, security groups vs NACLs, why your training VM should be in a private subnet with SSM Session Manager instead of an open port 22.
+- S3: buckets, prefixes (not folders), storage classes, lifecycle rules, versioning, presigned URLs, consistency, cost per GB and per request.
+- Compute: instance families, spot vs on-demand, AMIs, user data, EBS vs instance store.
+- Observability & cost: CloudWatch metrics/logs/alarms, Cost Explorer, Budgets, tagging strategy for cost allocation.
+- Terraform: providers, resources, data sources, variables/outputs, state (and remote state in S3 with locking), `plan` vs `apply`, modules, workspaces, import, drift, and what *not* to put in Terraform.
+- Cloud mapping: for every AWS service you use, name the GCP and Azure equivalent and one difference.
+
+**Hands-on exercises:**
+1. Create the AWS account, enable MFA on root, create an admin IAM user, set a US$50 budget with email alert. Never use root again.
+2. Terraform, in this order, one `apply` at a time: (a) S3 bucket for DVC + MLflow with versioning + lifecycle rule; (b) ECR repo with scan-on-push and a lifecycle policy keeping 10 images; (c) IAM OIDC provider + role that GitHub Actions can assume, scoped to `repo:alichr/orbiteye:*`; (d) remote Terraform state bucket + DynamoDB lock; (e) a `c6i.xlarge` in a private subnet reachable via SSM, with an instance profile that can read the S3 bucket.
+3. Switch DVC remote to S3; `dvc push`; delete local cache; `dvc pull`.
+4. Update `ci.yml` to assume the OIDC role (`aws-actions/configure-aws-credentials`), pull the eval set from S3, push the image to ECR. No secrets stored in GitHub.
+5. Run MLflow server on the EC2 instance (docker compose, Postgres + S3 artefact store); point local training at it over an SSM port-forward.
+6. Run one full training on the EC2 instance from a `user_data` bootstrap script; confirm the run appears in MLflow; terminate the instance from Terraform.
+7. GCP: `gcloud` setup, Artifact Registry, deploy the serving image to Cloud Run, run one Vertex AI custom job with the training image. Azure: ACR, Container Apps, one Azure ML command job. Terraform both, screenshot, destroy.
+8. Look at Cost Explorer daily for two weeks and write down what each line item is.
+
+**Common pitfalls & break-it drills:**
+- Leaving an instance or a NAT gateway running: NAT gateways cost ~US$32/month even idle. Destroy when done.
+- Public S3 bucket or `0.0.0.0/0` on port 22: understand why the scanners will find it in minutes.
+- Terraform state committed to git or lost: use remote state from exercise 2d onward.
+- Drill: manually change a security group in the console, run `terraform plan`, watch it detect drift, and revert.
+- Drill: rotate the OIDC role's trust policy to the wrong repo and watch CI fail with a clear error; fix.
+
+**Interview questions to be able to answer:**
+- How does GitHub Actions authenticate to AWS without a stored secret? Walk through the OIDC flow.
+- What is the difference between an IAM role and an IAM user? When would you use each?
+- Your training VM in a private subnet needs to `pip install`. What are the options and their costs?
+- What is in Terraform state and why is it sensitive?
+- Compare EKS, GKE and AKS in two sentences. Compare SageMaker and Vertex AI.
+- Your AWS bill doubled this month. How do you find out why?
+
+**Resources:**
+- AWS Skill Builder "Cloud Practitioner Essentials" (free): https://skillbuilder.aws/
+- AWS IAM docs "How IAM works" + policy evaluation logic: https://docs.aws.amazon.com/IAM/latest/UserGuide/intro-structure.html
+- GitHub OIDC with AWS: https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+- Terraform "Get Started – AWS": https://developer.hashicorp.com/terraform/tutorials/aws-get-started  ·  Terraform AWS provider docs
+- AWS Well-Architected Framework (skim the six pillars): https://aws.amazon.com/architecture/well-architected/
+- GCP Cloud Run quickstart: https://cloud.google.com/run/docs/quickstarts  ·  Vertex AI custom training: https://cloud.google.com/vertex-ai/docs/training/overview
+- Azure Container Apps quickstart: https://learn.microsoft.com/en-us/azure/container-apps/  ·  Azure ML command jobs: https://learn.microsoft.com/en-us/azure/machine-learning/how-to-train-model
+- Cloud service comparison table: https://cloud.google.com/docs/get-started/aws-azure-gcp-service-comparison
+
 **You can claim it when:**
 - [ ] `terraform apply` / `destroy` recreates all AWS infra from scratch, nothing was clicked in the console.
 - [ ] The serving container is reachable at a public URL on all three clouds (screenshots in README, then torn down).
@@ -203,6 +452,53 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 - `serving/app.py`, `deploy/helm/orbiteye/` chart, `deploy/kind/` local setup.
 - CD in `release.yml` runs `helm upgrade --install` against the cluster on tag.
 - Load-test report: p50/p95/p99 latency at N replicas, HPA scaling event captured in a screenshot.
+
+
+**Core concepts you must be able to explain:**
+- Serving: sync vs async vs batch inference, latency vs throughput, dynamic batching, cold start, model loading strategies, versioned endpoints, input validation and adversarial inputs, why ONNX Runtime (graph optimisations, execution providers), thread settings, warm-up requests.
+- Kubernetes architecture: control plane (API server, etcd, scheduler, controller manager) vs nodes (kubelet, kube-proxy, container runtime); the reconciliation loop; declarative desired state.
+- Objects: Pod (and why you never create bare Pods), Deployment → ReplicaSet → Pod, Service types and how ClusterIP DNS works, Ingress and ingress controllers, ConfigMap/Secret (and that Secrets are only base64), Namespace, ServiceAccount + RBAC, PersistentVolume/Claim, Job/CronJob (used for the drift job in stage 7).
+- Scheduling & reliability: requests vs limits (and CPU throttling vs OOMKill), QoS classes, liveness vs readiness vs startup probes, rolling update parameters (`maxSurge`, `maxUnavailable`), rollback and revision history, PodDisruptionBudget, HPA (metrics-server, target utilisation, scale-down stabilisation), node autoscaling.
+- Helm: charts, values, templates, releases, `upgrade --install`, `rollback`, `--atomic`, chart dependencies.
+- EKS specifics: node groups, IAM roles for service accounts (IRSA) so a pod can read S3 without keys, the AWS Load Balancer Controller, cost of a control plane (~US$73/month, so create and destroy within a few days).
+
+**Hands-on exercises:**
+1. Write `serving/app.py`: load ONNX model from S3 by version at startup, `/predict` (multipart image), `/healthz`, `/readyz` (false until model loaded), `/metrics`. Add a warm-up inference. Unit-test with `TestClient`.
+2. Load-test locally with `k6` (`serving/loadtest.js`) at 10/50/200 virtual users; record p50/p95/p99 and CPU; then set ONNX Runtime `intra_op_num_threads` and compare.
+3. `kind create cluster` with 3 nodes; write raw manifests first (Deployment, Service, ConfigMap, HPA), apply them, then convert to a Helm chart. Keep both; the manifests teach, the chart ships.
+4. Set requests/limits; deliberately set memory limit too low and observe `OOMKilled`; set CPU limit too low and observe latency; fix and explain.
+5. Break readiness: make `/readyz` return 500 and watch the pod be removed from the Service endpoints while staying alive.
+6. Rolling update to a bad image tag; observe the rollout stall; `helm rollback`; describe what the two ReplicaSets did.
+7. Install metrics-server, drive load with k6, watch `kubectl get hpa -w` scale 1 → 4 → 1.
+8. Terraform an EKS cluster (`terraform-aws-modules/eks`), install the chart with IRSA for S3 access, expose via ALB Ingress, run the same load test, screenshot, **destroy the cluster the same day**.
+9. `kubectl` fluency drill: without docs, do `get/describe/logs -f --previous/exec -it/port-forward/top/rollout status/rollout undo/explain`.
+
+**Common pitfalls & break-it drills:**
+- No resource requests → scheduler packs pods → noisy neighbours. No limits → one pod eats the node.
+- Liveness probe that depends on a downstream service → cascading restarts.
+- Secrets in `values.yaml` committed to git. Use external secrets or sealed secrets; at minimum, `--set` from CI.
+- Forgetting EKS costs; forgetting the ALB and EBS volumes left behind after `destroy`.
+- Drill: `kubectl delete pod` on a running pod; explain what recreated it. `kubectl drain` a node; watch pods move.
+- Drill: cause `ImagePullBackOff` (wrong tag), `CrashLoopBackOff` (bad env var), `Pending` (requests too large). Diagnose each from `describe` + `logs` only.
+
+**Interview questions to be able to answer:**
+- What happens, component by component, when you run `kubectl apply -f deployment.yaml`?
+- Difference between liveness and readiness probes; give a failure caused by getting each wrong.
+- How does a Service route traffic to pods? What is an Endpoint?
+- Requests vs limits: what does the scheduler use, what does the kubelet enforce?
+- How would you deploy a new model version with zero downtime and roll back in under a minute?
+- How does a pod in EKS access S3 without an access key?
+- Why ONNX Runtime instead of serving the PyTorch model directly?
+
+**Resources:**
+- Kubernetes docs "Concepts" (Workloads, Services, Configuration, Policies) and "Tasks": https://kubernetes.io/docs/concepts/
+- *Kubernetes Up & Running*, 3rd ed. (Burns, Beda, Hightower, Evenson)
+- kind quick start: https://kind.sigs.k8s.io/docs/user/quick-start/  ·  Helm docs: https://helm.sh/docs/
+- Kubernetes The Hard Way (read once, do if curious): https://github.com/kelseyhightower/kubernetes-the-hard-way
+- EKS Terraform module: https://github.com/terraform-aws-modules/terraform-aws-eks  ·  IRSA: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
+- FastAPI docs: https://fastapi.tiangolo.com/  ·  ONNX Runtime Python + performance tuning: https://onnxruntime.ai/docs/performance/
+- k6 docs: https://grafana.com/docs/k6/latest/
+- KServe (read to understand what managed serving adds): https://kserve.github.io/website/
 
 **You can claim it when:**
 - [ ] A bad model version rolled out and you rolled it back with one command, and can explain what the ReplicaSets did.
@@ -226,6 +522,50 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 - Simulate drift realistically: serve images with synthetic haze / different season / different sensor gain and watch the drift score cross the threshold.
 - Grafana dashboard JSON committed to repo; screenshot in README.
 - A runbook `RUNBOOK.md`: what each alert means and what to do.
+
+
+**Core concepts you must be able to explain:**
+- Why ML systems fail silently: no exceptions, just worse predictions. The difference between software monitoring and model monitoring.
+- Metric types: counters, gauges, histograms, summaries; labels/cardinality; RED (rate, errors, duration) and USE methods; SLIs/SLOs/error budgets; percentiles and why averages lie.
+- Prometheus model: pull-based scraping, `ServiceMonitor`, PromQL basics (`rate`, `histogram_quantile`, `sum by`), recording rules, alerting rules, Alertmanager routing/silencing.
+- Grafana: dashboards as code (JSON), variables, panels for latency heatmaps, annotations for deployments.
+- Model-level signals: prediction class distribution, confidence distribution, input statistics (per-channel mean/std, brightness, cloud fraction), embedding drift, ground-truth delay and how to evaluate when labels arrive late.
+- Drift: covariate shift vs prior shift vs concept drift; statistical tests (KS, PSI, Jensen–Shannon, Wasserstein) and their sensitivity to sample size; reference window vs current window; thresholds and alert fatigue.
+- Logging: structured JSON, correlation/request IDs, sampling, PII considerations, log-based metrics, Loki + LogQL.
+- Closing the loop: alert → runbook → retrain trigger → evaluation gate → human approval → deploy; and why fully automatic promotion is usually wrong.
+
+**Hands-on exercises:**
+1. Instrument the FastAPI app: request latency histogram, request counter by status, in-flight gauge, model version label, plus custom gauges for mean predicted confidence and per-class prediction counts.
+2. Install `kube-prometheus-stack` in kind; add a `ServiceMonitor`; write PromQL for p95 latency and error rate; build a dashboard; commit its JSON.
+3. Write alert rules: p95 > 300 ms for 5 min, error rate > 1 %, prediction distribution collapsed to one class, drift score > threshold. Route to email (or a Slack webhook) via Alertmanager. Trigger each one deliberately.
+4. Log every inference (features summary + prediction + confidence + request ID) as JSON to stdout; ship to Loki; query by request ID.
+5. Build the drift job: a Kubernetes `CronJob` that pulls the last 24 h of inference logs from S3, runs an Evidently `DataDriftPreset` + custom image-statistic tests against the training reference, writes an HTML report to S3 and pushes a `drift_score` gauge to Prometheus via Pushgateway.
+6. Simulate drift: a script that sends 2,000 requests of EuroSAT images with (a) added haze, (b) reduced brightness (winter), (c) channel swap (new sensor). Watch the drift score, the confidence gauge and the class-distribution alert. Record which signal fired first for each shift and write it in `docs/notes/stage-7.md`.
+7. Wire the drift alert to trigger `nightly-train.yml` via `repository_dispatch`; the retrain opens a PR that must pass the quality gate and be approved by you.
+8. Write `RUNBOOK.md`: for each alert → meaning, likely causes, first three commands to run, escalation.
+
+**Common pitfalls & break-it drills:**
+- High-cardinality labels (request ID as a Prometheus label) → Prometheus falls over. Understand cardinality.
+- Drift tests on 50 samples fire constantly; on 50,000 they fire on trivial shifts. Tune windows and thresholds.
+- Monitoring accuracy when you have no labels: be explicit about proxies.
+- Drill: kill Prometheus; see what you lose; add persistence. Silence an alert; forget to unsilence; discover the gap.
+
+**Interview questions to be able to answer:**
+- What would you monitor for this model in production, in order of priority, and why?
+- How do you detect that a model is degrading when you don't get labels for weeks?
+- Explain data drift vs concept drift with an example from satellite imagery.
+- What is `histogram_quantile` doing? Why can't you average p95s across pods?
+- An alert fires at 3 a.m. saying drift > threshold. What do you do, and what should happen automatically?
+
+**Resources:**
+- Prometheus docs (Concepts, Querying basics, Alerting): https://prometheus.io/docs/introduction/overview/
+- Grafana dashboards best practices: https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/best-practices/
+- kube-prometheus-stack chart: https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
+- Evidently docs + tutorials: https://docs.evidentlyai.com/  ·  Evidently "ML monitoring" free course: https://learn.evidentlyai.com/
+- Google SRE book, ch. 6 "Monitoring Distributed Systems" (free): https://sre.google/sre-book/monitoring-distributed-systems/
+- *Designing ML Systems*, ch. 8 (data distribution shifts and monitoring)
+- prometheus-fastapi-instrumentator: https://github.com/trallnag/prometheus-fastapi-instrumentator
+- Loki docs: https://grafana.com/docs/loki/latest/
 
 **You can claim it when:**
 - [ ] A drift alert fired, you diagnosed it from the dashboard, and retraining was triggered automatically.
@@ -289,6 +629,60 @@ of hardware, so the constraints you design for are the real ones.
   the benchmark table as a PR comment. This is the "cycle" you asked for: model promoted in MLflow →
   CI signs a bundle → bundle lands in S3 → emulated device fetches, verifies, self-tests, switches.
 
+
+**Core concepts you must be able to explain:**
+- Why edge: latency, bandwidth, privacy, autonomy when disconnected. Edge vs cloud trade-offs and the "compute where the data is" argument for satellites (downlink is the bottleneck, not compute).
+- CPU inference cost model: FLOPs vs memory bandwidth, NHWC vs NCHW, cache effects, why batch size 1 dominates on-device, thread scaling limits on 4 small cores.
+- Quantisation: FP32 → FP16 → INT8; symmetric vs asymmetric, per-tensor vs per-channel; post-training static (calibration) vs dynamic vs quantisation-aware training; typical accuracy loss and how to measure it; operators that don't quantise well.
+- Distillation and pruning: teacher/student loss, temperature, structured vs unstructured pruning and why unstructured rarely speeds up CPUs.
+- ONNX: opsets, graph optimisation levels, `onnxsim`, execution providers, session options, IO binding; when to convert to TFLite/LiteRT instead.
+- ARM64 and cross-building: what QEMU user-mode emulation does, why timings are unreliable under it, multi-arch manifests, `python:slim` arm64 wheels availability (check `onnxruntime` and `pillow` have arm64 wheels).
+- Embedded Linux: Raspberry Pi OS Lite, first-boot provisioning, `systemd` hardening (`ProtectSystem`, `MemoryMax`, `WatchdogSec` + `sd_notify`), overlay/read-only root, journald size caps, SD-card wear, thermal throttling, power measurement (or estimation from CPU time × TDP).
+- OTA update design: signed artefacts (Ed25519), manifest with hashes, A/B slots, health self-test, automatic rollback, idempotent and resumable downloads, update only during "contact windows".
+- Onboard-satellite context: radiation-induced faults and watchdogs, power budgets in watts, no interactive access, delayed/limited telemetry, determinism, and the reference missions Φ-sat-1 (Intel Movidius, cloud detection) and OPS-SAT.
+
+**Hands-on exercises:**
+1. Export ResNet-18 to ONNX with static shape `[1,3,64,64]`, run `onnxsim`, verify outputs match PyTorch within 1e-4 on 100 images.
+2. Static INT8 quantisation with ONNX Runtime using 500 calibration images; measure accuracy delta on the full test set. Then try dynamic quantisation and compare. Write both numbers down.
+3. Distil to MobileNetV3-small (temperature 4, α 0.7 as a start); quantise; fill the FP32/INT8/distilled table with accuracy, size, p50 latency (native Mac, then arm64 emulated), RSS.
+4. Threads sweep (1/2/4) under arm64 emulation and record relative change; explain why absolute numbers are meaningless under QEMU.
+5. Build `edge/Dockerfile.pi` for `linux/arm64` with `buildx`; run it with `--platform linux/arm64` on the Mac; run the edge tests inside.
+6. Boot the official Raspberry Pi OS Lite 64-bit image in `qemu-system-aarch64`; SSH into it; run `firstboot.sh`; install the `systemd` unit; reboot; confirm the service starts on boot; `kill -9` it and watch the watchdog restart it; check `journalctl` size caps.
+7. Implement the onboard service loop with a per-frame budget of e.g. 200 ms; if exceeded, log a "budget miss" telemetry event and skip. Prove with `strace -f -e trace=network` that no socket is opened in onboard mode.
+8. Implement the OTA cycle: `sign_bundle.py` (ground/CI), `downlink.py` (verify → install to inactive slot → self-test on 20 golden images → switch or rollback), `uplink.py`. Tests: tampered signature rejected; corrupted model fails self-test and rolls back; power-cut mid-install (kill during copy) leaves the active slot intact.
+9. 10-minute soak test in CI (24 h once locally): assert RSS growth < 5 % and zero budget misses.
+10. Estimate energy per inference: CPU time × assumed 5 W for a Pi 4 under load; put the number and the assumption in the README.
+
+**Common pitfalls & break-it drills:**
+- Dynamic input shapes and `Resize` ops that silently fall back to FP32 after quantisation; inspect the quantised graph.
+- Calibrating on training images that don't match deployment brightness → INT8 accuracy collapse; use a representative set.
+- Timing under emulation and reporting it as real. Always label emulated numbers.
+- Watchdog configured but the service never calls `sd_notify(WATCHDOG=1)` → restart loop. Test it.
+- Drill: flip one byte in the model file after signing; ensure verification fails *before* the model is loaded.
+
+**Interview questions to be able to answer:**
+- How would you get a 45 MB FP32 model to run at 5 fps on a 4-core ARM CPU with 2 GB RAM? Walk through the steps and expected losses.
+- Explain post-training static quantisation. Why do you need calibration data? Per-channel vs per-tensor?
+- How do you update a model on a device you can only reach for 8 minutes every 90 minutes, over a lossy link, without ever bricking it?
+- What is a watchdog and how does `systemd` implement one?
+- Why might a distilled model be a better edge choice than a pruned one?
+- What breaks first on a real device that you couldn't see under emulation?
+
+**Resources:**
+- ONNX Runtime quantisation guide: https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html
+- ONNX Runtime on ARM / performance tuning: https://onnxruntime.ai/docs/performance/tune-performance/
+- PyTorch ONNX export: https://pytorch.org/docs/stable/onnx.html  ·  onnx-simplifier: https://github.com/daquexian/onnx-simplifier
+- Distillation paper (Hinton et al.): https://arxiv.org/abs/1503.02531  ·  MobileNetV3 paper: https://arxiv.org/abs/1905.02244
+- Docker multi-platform builds: https://docs.docker.com/build/building/multi-platform/
+- Raspberry Pi OS docs (headless setup, `raspi-config`, `config.txt`): https://www.raspberrypi.com/documentation/computers/
+- Booting Raspberry Pi OS in QEMU: https://github.com/dhruvvyas90/qemu-rpi-kernel (and the `qemu-system-aarch64 -M raspi3b` docs: https://www.qemu.org/docs/master/system/arm/raspi.html)
+- systemd watchdog & hardening: `man systemd.service` (WatchdogSec), `man systemd.exec`; https://0pointer.de/blog/projects/watchdog.html
+- Ed25519 in Python (`cryptography`): https://cryptography.io/en/latest/hazmat/primitives/asymmetric/ed25519/
+- The Update Framework (TUF) — read the threat model: https://theupdateframework.io/
+- ESA Φ-sat-1 overview: https://www.esa.int/Applications/Observing_the_Earth/Ph-sat  ·  Giuffrida et al., "The Φ-Sat-1 Mission" (IEEE TGRS 2021)
+- ESA OPS-SAT: https://www.esa.int/Enabling_Support/Operations/OPS-SAT
+- TinyML book (Warden & Situnayake) for the embedded mindset
+
 **You can claim it when:**
 - [ ] Table: FP32 → INT8 → distilled INT8, with accuracy, latency, size, memory (native + arm64 emulated).
 - [ ] The arm64 image boots in the emulated Pi OS as a `systemd` service, runs fully offline, survives
@@ -318,14 +712,7 @@ and that the image is ready to flash. That is a strong, honest answer; the Jetso
 
 ---
 
-## Weekly cadence and how to study each stage
-
-1. **Concept day (2 h):** read the official docs for the tool (not blog posts), write a one-page summary in `docs/notes/<stage>.md` in your own words.
-2. **Build days (5–6 h):** implement the stage's artefacts. Use Claude Code to unblock, but type the core pieces yourself and be able to rewrite them from scratch.
-3. **Break-it day (1–2 h):** deliberately break it (kill a pod, corrupt a config, revoke a permission, delete a layer) and fix it. Interview questions are almost always "what happens when X goes wrong".
-4. **Checklist:** tick every "You can claim it when…" box before starting the next stage. Commit the ticked list.
-
-## Primary resources (official-first)
+## Primary resources (official-first, cross-stage)
 
 - Linux/Git: *The Linux Command Line* (Shotts, free PDF), Pro Git (free), MIT "Missing Semester".
 - DVC docs "Get Started", MLflow docs "Tracking" + "Model Registry".
@@ -336,3 +723,38 @@ and that the image is ready to flash. That is a strong, honest answer; the Jetso
 - Prometheus/Grafana docs; Evidently docs; Google SRE book chapter on monitoring.
 - ONNX Runtime quantisation docs; Docker buildx multi-platform docs; Raspberry Pi OS headless setup docs; QEMU aarch64 Pi boot guides; systemd watchdog docs; ESA Φ-sat-1 and OPS-SAT papers.
 - Whole-lifecycle framing: *Designing Machine Learning Systems* (Huyen), Made With ML MLOps course.
+
+
+---
+
+## Appendix A — Evidence you must have at the end (what a hiring manager can click)
+
+| Claim | Evidence in repo / links |
+|---|---|
+| Git / Linux | Commit history with PRs, `Makefile`, provisioning scripts, `docs/notes/stage-1.md` |
+| Reproducible ML | `dvc.yaml`, `params.yaml`, MLflow screenshots, `DESIGN.md`, tests |
+| Docker | `docker/` with size table in `docker/README.md`, Trivy report artefact in CI |
+| CI/CD | Green workflow runs, a PR blocked by the quality gate (link to it), a tagged release with image digest |
+| AWS / GCP / Azure | `infra/*` Terraform, screenshots of live URLs in `docs/assets/`, cost screenshot |
+| Kubernetes | Helm chart, k6 report, HPA scaling screenshot, rollback demo in the video |
+| Monitoring | Grafana JSON, alert rules, drift report HTML, `RUNBOOK.md`, drift-triggered retrain PR |
+| Edge | Optimisation table, arm64 image in GHCR, OTA tests green, soak-test output, provisioning README |
+| End-to-end | 3-minute demo video: PR → CI → release → k8s → Grafana → drift → retrain → signed bundle → emulated device |
+
+## Appendix B — Cost-control checklist (read before every cloud session)
+
+- [ ] Budget alarm exists on every cloud account.
+- [ ] `terraform destroy` at the end of every session; check the console for orphaned load balancers, EBS volumes, NAT gateways, static IPs.
+- [ ] EKS/GKE/AKS clusters live for hours or days, never weeks.
+- [ ] Use spot for anything restartable; use `t3`/`c6i` CPU instances for training here.
+- [ ] Tag everything `project=orbiteye` and filter Cost Explorer by tag weekly.
+
+## Appendix C — Glossary (write your own one-line definition next to each; this is a study tool)
+
+A/B slots · ALB · AMI · Alertmanager · Apptainer · artefact store · autoscaling (HPA / cluster) · backend store · blue/green vs canary · buildx · calibration (quantisation) · cardinality · CD vs continuous deployment · cgroups · ClusterIP · concept drift · covariate shift · CronJob · CrashLoopBackOff · data contract · DDP (know what it is even though you skip it) · digest · distillation · DVC remote · Ed25519 · EKS · endpoint (k8s) · error budget · execution provider · GHCR · HPA · IAM role vs user · Ingress · IRSA · JSD / KS / PSI · kind · kubelet · layer cache · liveness / readiness / startup probe · Loki · macro-F1 · manifest list · metrics-server · MLflow registry stage · multi-stage build · namespace (Linux) · namespace (k8s) · NAT gateway · OIDC · ONNX opset · onboard vs ground segment · OOMKilled · overlay filesystem · p95 / p99 · Pending (pod) · PID 1 · PodDisruptionBudget · post-training quantisation · PromQL · Pushgateway · QoS class · quality gate · QEMU user-mode vs system emulation · rate() · read-only rootfs · reconciliation loop · reflog · remote state · ReplicaSet · requests vs limits · RED / USE · rolling update · runbook · sd_notify · SLI / SLO · smoke test · spot instance · ServiceMonitor · soak test · stratified split · systemd unit · Terraform drift · TUF · watchdog · workflow_dispatch
+
+## Appendix D — If you get stuck
+
+- Every tool above has an official "getting started" that works; do that first, then adapt to OrbitEye. Don't start from a random blog.
+- When something fails, read the error fully, then `describe`/`logs`/`journalctl`, then docs, then search. Write the fix in `docs/notes/`.
+- Timebox: 45 minutes stuck → write down exactly what you tried → ask (a person, a forum, an AI) with that write-up. The write-up itself solves half of them.

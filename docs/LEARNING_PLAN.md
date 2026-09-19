@@ -140,13 +140,13 @@ The ML is intentionally boring. All the learning is in the lifecycle around it.
 ### ✅ Your tasks — Stage 0 (setup)
 
 **🧰 A. Setup**
-- [ ] Install Homebrew tools: `git gh uv pyenv tmux htop jq yq tree wget` and `kind kubectl helm k6 terraform awscli trivy qemu`.
-- [ ] Install Docker Desktop; enable "Use Rosetta"; set RAM to 8 GB.
-- [ ] Install `azure-cli` (can wait until stage 5).
-- [ ] `uv python install 3.12`; create `.venv`; install the package list below.
-- [ ] Run the sanity line: `docker run --rm hello-world && kind version && kubectl version --client && terraform -version`.
+- [x] Install Homebrew tools: `git gh uv pyenv tmux htop jq yq tree wget` and `kind kubectl helm k6 terraform awscli trivy qemu` (Terraform comes from the `hashicorp/tap` tap; it is no longer in Homebrew core).
+- [x] Install Docker Desktop; enable "Use Rosetta"; set RAM to 8 GB.
+- [x] Install `azure-cli` (can wait until stage 5).
+- [x] `uv python install 3.12`; create `.venv`; install the package list below.
+- [x] Run the sanity line: `docker run --rm hello-world && kind version && kubectl version --client && terraform -version`.
 - [ ] Create accounts: AWS (set a **US$50 budget alarm immediately**) and Azure (US$200 credits).
-- [ ] Create `docs/notes/` folder in the repo (one `stage-N.md` file per stage will live here).
+- [x] Create `docs/notes/` folder in the repo (one `stage-N.md` file per stage will live here).
 - [ ] Read "How to study each stage" and "Weekly rhythm" below and block the hours in your calendar.
 
 ### 💻 One-time Mac setup (do this on day 1)
@@ -155,7 +155,8 @@ The ML is intentionally boring. All the learning is in the lifecycle around it.
 # package manager + core tools
 brew install git gh uv pyenv tmux htop jq yq tree wget
 brew install --cask docker            # Docker Desktop (enable "Use Rosetta" + increase RAM to 8 GB in Settings)
-brew install kind kubectl helm k6 terraform awscli trivy
+brew install kind kubectl helm k6 awscli trivy
+brew tap hashicorp/tap && brew install hashicorp/tap/terraform   # terraform left Homebrew core in 2023
 brew install azure-cli
 brew install qemu                     # needed for stage 8 ARM64 emulation
 

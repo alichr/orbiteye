@@ -126,7 +126,7 @@ The ML is intentionally boring. All the learning is in the lifecycle around it.
 - [ ] Install `azure-cli` (can wait until stage 5).
 - [ ] `uv python install 3.12`; create `.venv`; install the package list below.
 - [ ] Run the sanity line: `docker run --rm hello-world && kind version && kubectl version --client && terraform -version`.
-- [ ] Create accounts: AWS (set a **US$50 budget alarm immediately**), Azure. Optional: Docker Hub, Grafana Cloud.
+- [ ] Create accounts: AWS (set a **US$50 budget alarm immediately**) and Azure (US$200 credits).
 - [ ] Create `docs/notes/` folder in the repo (one `stage-N.md` file per stage will live here).
 - [ ] Read "How to study each stage" and "Weekly rhythm" below and block the hours in your calendar.
 
@@ -149,7 +149,7 @@ uv pip install torch torchvision mlflow dvc[s3] hydra-core pytest ruff pre-commi
 docker run --rm hello-world && kind version && kubectl version --client && terraform -version
 ```
 
-Create free accounts now so they are ready when needed: GitHub (done), AWS (free tier, set a **US$50 budget alarm immediately**), Azure (US$200 credits), Docker Hub (optional), Grafana Cloud (optional).
+Create free accounts now so they are ready when needed: GitHub (done), AWS (free tier, set a **US$50 budget alarm immediately**), Azure (US$200 credits).
 
 ### 🔄 How to study each stage (repeat every stage)
 

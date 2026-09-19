@@ -19,7 +19,7 @@
 > [!IMPORTANT]
 > **Goal.** Finish one small ML project that legitimately covers every skill on this CV line:
 >
-> *MLOps / Infrastructure: Docker, Kubernetes, Git, CI/CD, model monitoring; AWS, GCP, Azure; Linux; edge deployment (embedded ARM / Raspberry Pi, onboard satellite systems)*
+> *MLOps / Infrastructure: Docker, Kubernetes, Git, CI/CD, model monitoring; AWS, Azure; Linux; edge deployment (embedded ARM / Raspberry Pi, onboard satellite systems)*
 >
 > Distributed multi-GPU training, HPC clusters and NVIDIA Jetson are deliberately left out: they need hardware you do not have. The edge target is a Raspberry Pi, fully exercised via ARM64 emulation.
 
@@ -30,7 +30,7 @@
 
 | | Section | | Section |
 |---|---|---|---|
-| 📋 | [Master task tracker](#-master-task-tracker-start-here) | ☁️ | [Stage 5 — Cloud: AWS, GCP, Azure](#stage-5) |
+| 📋 | [Master task tracker](#-master-task-tracker-start-here) | ☁️ | [Stage 5 — Cloud: AWS & Azure](#stage-5) |
 | 🎯 | [The project](#project) | ☸️ | [Stage 6 — Serving & Kubernetes](#stage-6) |
 | 🧰 | [Before you start: setup & how to study](#setup) | 📈 | [Stage 7 — Monitoring](#stage-7) |
 | 🐧 | [Stage 1 — Linux + Git](#stage-1) | 🛰️ | [Stage 8 — Edge deployment](#stage-8) |
@@ -51,7 +51,7 @@ Every stage below opens with a **"Your tasks"** checklist: every single thing yo
 | 2 | 🧬 ML design, DVC, MLflow | 2–3 | [Stage 2 tasks](#-your-tasks--stage-2) | ⬜ |
 | 3 | 🐳 Docker | 4 | [Stage 3 tasks](#-your-tasks--stage-3) | ⬜ |
 | 4 | 🔁 CI/CD | 5 | [Stage 4 tasks](#-your-tasks--stage-4) | ⬜ |
-| 5 | ☁️ Cloud: AWS (+ GCP, Azure) | 6–7 | [Stage 5 tasks](#-your-tasks--stage-5) | ⬜ |
+| 5 | ☁️ Cloud: AWS (+ Azure) | 6–7 | [Stage 5 tasks](#-your-tasks--stage-5) | ⬜ |
 | 6 | ☸️ Serving + Kubernetes | 8–9 | [Stage 6 tasks](#-your-tasks--stage-6) | ⬜ |
 | 7 | 📈 Monitoring | 10 | [Stage 7 tasks](#-your-tasks--stage-7) | ⬜ |
 | 8 | 🛰️ Edge deployment | 11–12 | [Stage 8 tasks](#-your-tasks--stage-8) | ⬜ |
@@ -123,10 +123,10 @@ The ML is intentionally boring. All the learning is in the lifecycle around it.
 **🧰 A. Setup**
 - [ ] Install Homebrew tools: `git gh uv pyenv tmux htop jq yq tree wget` and `kind kubectl helm k6 terraform awscli trivy qemu`.
 - [ ] Install Docker Desktop; enable "Use Rosetta"; set RAM to 8 GB.
-- [ ] Install `google-cloud-sdk` (cask) and `azure-cli` (can wait until stage 5).
+- [ ] Install `azure-cli` (can wait until stage 5).
 - [ ] `uv python install 3.12`; create `.venv`; install the package list below.
 - [ ] Run the sanity line: `docker run --rm hello-world && kind version && kubectl version --client && terraform -version`.
-- [ ] Create accounts: AWS (set a **US$50 budget alarm immediately**), GCP, Azure. Optional: Docker Hub, Grafana Cloud.
+- [ ] Create accounts: AWS (set a **US$50 budget alarm immediately**), Azure. Optional: Docker Hub, Grafana Cloud.
 - [ ] Create `docs/notes/` folder in the repo (one `stage-N.md` file per stage will live here).
 - [ ] Read "How to study each stage" and "Weekly rhythm" below and block the hours in your calendar.
 
@@ -137,7 +137,6 @@ The ML is intentionally boring. All the learning is in the lifecycle around it.
 brew install git gh uv pyenv tmux htop jq yq tree wget
 brew install --cask docker            # Docker Desktop (enable "Use Rosetta" + increase RAM to 8 GB in Settings)
 brew install kind kubectl helm k6 terraform awscli trivy
-brew install --cask google-cloud-sdk  # gcloud
 brew install azure-cli
 brew install qemu                     # needed for stage 8 ARM64 emulation
 
@@ -150,7 +149,7 @@ uv pip install torch torchvision mlflow dvc[s3] hydra-core pytest ruff pre-commi
 docker run --rm hello-world && kind version && kubectl version --client && terraform -version
 ```
 
-Create free accounts now so they are ready when needed: GitHub (done), AWS (free tier, set a **US$50 budget alarm immediately**), GCP (US$300 credits), Azure (US$200 credits), Docker Hub (optional), Grafana Cloud (optional).
+Create free accounts now so they are ready when needed: GitHub (done), AWS (free tier, set a **US$50 budget alarm immediately**), Azure (US$200 credits), Docker Hub (optional), Grafana Cloud (optional).
 
 ### 🔄 How to study each stage (repeat every stage)
 
@@ -545,7 +544,7 @@ orbiteye/
 |---|---|
 | 📅 **When** | Week 5 |
 | 🎯 **Skill claimed** | CI/CD |
-| ⏭️ **Next** | [Stage 5 — Cloud: AWS, GCP, Azure](#stage-5) |
+| ⏭️ **Next** | [Stage 5 — Cloud: AWS & Azure](#stage-5) |
 
 ### ✅ Your tasks — Stage 4
 
@@ -655,40 +654,39 @@ orbiteye/
 
 <a id="stage-5"></a>
 
-## ☁️ Stage 5 — Cloud: AWS in depth, GCP and Azure by mapping
+## ☁️ Stage 5 — Cloud: AWS in depth, Azure by mapping
 
 | | |
 |---|---|
 | 📅 **When** | Week 6–7 |
-| 🎯 **Skill claimed** | AWS, GCP, Azure |
+| 🎯 **Skill claimed** | AWS, Azure |
 | ⏭️ **Next** | [Stage 6 — Serving & Kubernetes](#stage-6) |
 
 ### ✅ Your tasks — Stage 5
 
 **🧰 A. Setup**
-- [ ] `awscli`, `terraform`, `gcloud`, `az` installed and authenticated.
+- [ ] `awscli`, `terraform`, `az` installed and authenticated.
 - [ ] AWS: MFA on root, admin IAM user, US$50 budget alert. Never use root again.
-- [ ] GCP and Azure free-credit accounts active with budget alerts.
+- [ ] Azure free-credit account active with a budget alert.
 - [ ] Read Appendix B (cost checklist) and keep it open during every cloud session.
 - [ ] `docs/notes/stage-5.md` created.
 
 **📝 B. Concepts & notes** → `docs/notes/stage-5.md`
-- [ ] Shared responsibility; regions/AZs; IaaS/PaaS/SaaS placement of EC2, EKS, Cloud Run, SageMaker.
+- [ ] Shared responsibility; regions/AZs; IaaS/PaaS/SaaS placement of EC2, EKS, Azure Container Apps, SageMaker.
 - [ ] IAM: principals, identity vs resource policies, roles & trust policies, `AssumeRole`, instance profiles, least privilege, OIDC federation.
 - [ ] Networking: VPC, public/private subnets, route tables, IGW, NAT, SGs vs NACLs, SSM Session Manager instead of port 22.
 - [ ] S3: prefixes, storage classes, lifecycle, versioning, presigned URLs, consistency, cost.
 - [ ] Compute: instance families, spot vs on-demand, AMIs, user data, EBS vs instance store.
 - [ ] CloudWatch, Cost Explorer, Budgets, tagging.
 - [ ] Terraform: providers, resources, data sources, vars/outputs, state & remote state with locking, plan vs apply, modules, workspaces, import, drift.
-- [ ] Fill in the AWS/GCP/Azure mapping table with one difference per row.
+- [ ] Fill in the AWS/Azure mapping table with one difference per row.
 
 **🔨 C. Build**
 - [ ] `infra/aws/`: S3 (versioning + lifecycle), ECR (scan-on-push, keep 10), OIDC provider + role scoped to `repo:alichr/orbiteye:*`, remote state bucket + DynamoDB lock, `c6i.xlarge` in private subnet via SSM with instance profile.
-- [ ] `infra/gcp/`: Artifact Registry, Cloud Run service, Vertex AI custom job.
 - [ ] `infra/azure/`: ACR, Container Apps, Azure ML command job.
 - [ ] DVC remote switched to S3; `ci.yml` assumes OIDC role, pulls eval set from S3, pushes image to ECR. No stored cloud secrets.
 - [ ] MLflow server on EC2 (compose: Postgres + S3 artefact store), reached via SSM port-forward.
-- [ ] Screenshots of live URLs on all three clouds in `docs/assets/`; then everything destroyed.
+- [ ] Screenshots of live URLs on both clouds in `docs/assets/`; then everything destroyed.
 
 **🧪 D. Exercises**
 - [ ] Ex 1: account hardening + budget (see A).
@@ -697,7 +695,7 @@ orbiteye/
 - [ ] Ex 4: `ci.yml` on OIDC (`aws-actions/configure-aws-credentials`).
 - [ ] Ex 5: remote MLflow on EC2; local training logs to it.
 - [ ] Ex 6: one full training on EC2 via `user_data`; run appears in MLflow; `terraform destroy` the instance.
-- [ ] Ex 7: GCP Cloud Run + Vertex job; Azure Container Apps + Azure ML job; Terraform, screenshot, destroy.
+- [ ] Ex 7: Azure ACR + Container Apps + one Azure ML job; Terraform, screenshot, destroy.
 - [ ] Ex 8: check Cost Explorer daily for two weeks; write down every line item.
 
 **💥 E. Break-it drills**
@@ -712,40 +710,42 @@ orbiteye/
 - [ ] Stage 5 ✅ in tracker + `README.md`; commit via PR. **Confirm the bill.**
 
 > [!TIP]
-> **Honest framing for the CV:** you will go deep on **one** cloud (AWS) and do a thin but real deployment on the other two. In interviews say exactly that: "primary AWS, working knowledge of GCP/Azure equivalents." That is what most candidates who list all three actually mean, and you'll be able to back it up.
+> **Honest framing for the CV:** you will go deep on **one** cloud (AWS) and do a thin but real deployment on Azure. In interviews say exactly that: "primary AWS, working knowledge of Azure equivalents." That is what most candidates who list both actually mean, and you'll be able to back it up.
 
 ### 📚 Learn — AWS, deeply
 - IAM (users, roles, policies, least privilege, instance profiles), VPC basics, S3 (buckets, lifecycle, presigned URLs), EC2 (AMIs, spot, security groups, key pairs), ECR, EKS (stage 6), CloudWatch, cost explorer and budgets + alerts (set a US$50 alarm on day one).
 - Infrastructure as code with **Terraform**: S3 bucket for DVC + MLflow artefacts, ECR repo, an IAM role for GitHub Actions via OIDC (no long-lived keys), a small EC2 instance for training and MLflow.
 - Move MLflow server to a small EC2 with RDS Postgres backend (or keep in docker compose on EC2; both fine).
 
-### 📚 Learn — GCP + Azure, mapping
+### 📚 Learn — Azure, mapping
 
-| Concept | AWS | GCP | Azure |
-|---|---|---|---|
-| Object storage | S3 | GCS | Blob Storage |
-| Container registry | ECR | Artifact Registry | ACR |
-| Managed K8s | EKS | GKE | AKS |
-| Compute VM | EC2 | Compute Engine | Virtual Machines |
-| Managed ML | SageMaker | Vertex AI | Azure ML |
-| Identity | IAM | IAM | Entra ID / RBAC |
+| Concept | AWS | Azure |
+|---|---|---|
+| Object storage | S3 | Blob Storage |
+| Container registry | ECR | ACR |
+| Managed K8s | EKS | AKS |
+| Compute VM | EC2 | Virtual Machines |
+| Managed ML | SageMaker | Azure ML |
+| Identity | IAM | Entra ID / RBAC |
+| Serverless containers | App Runner / ECS Fargate | Container Apps |
+| IaC (native) | CloudFormation | Bicep / ARM |
 
-For each of GCP and Azure, using free credits: push your serving image to their registry, deploy it to Cloud Run / Azure Container Apps (serverless containers, cheapest way to get a real URL), and run one managed-training job (Vertex AI custom job / Azure ML command job) with your training container. Terraform both.
+On Azure, using free credits: push your serving image to ACR, deploy it to Azure Container Apps (serverless containers, cheapest way to get a real URL), and run one managed-training job (Azure ML command job) with your training container. Terraform all of it.
 
 ### 🔨 Build
-- `infra/aws/*.tf`, `infra/gcp/*.tf`, `infra/azure/*.tf`.
+- `infra/aws/*.tf`, `infra/azure/*.tf`.
 - DVC remote = S3; CI uses OIDC role to pull data and push images to ECR.
 - One training run on a CPU EC2 instance (e.g. `c6i.xlarge`) launched from your Terraform template, logged to the remote MLflow.
 
 ### 🧠 Core concepts you must be able to explain
-- Shared-responsibility model; regions and availability zones; the three service tiers (IaaS/PaaS/SaaS) and where EC2, EKS, Cloud Run, SageMaker sit.
+- Shared-responsibility model; regions and availability zones; the three service tiers (IaaS/PaaS/SaaS) and where EC2, EKS, Azure Container Apps, SageMaker sit.
 - IAM properly: principals, policies (identity vs resource), roles and trust policies, `AssumeRole`, instance profiles, least privilege, why access keys on a laptop are a smell, OIDC federation from GitHub.
 - Networking basics: VPC, subnets (public/private), route tables, internet gateway, NAT, security groups vs NACLs, why your training VM should be in a private subnet with SSM Session Manager instead of an open port 22.
 - S3: buckets, prefixes (not folders), storage classes, lifecycle rules, versioning, presigned URLs, consistency, cost per GB and per request.
 - Compute: instance families, spot vs on-demand, AMIs, user data, EBS vs instance store.
 - Observability & cost: CloudWatch metrics/logs/alarms, Cost Explorer, Budgets, tagging strategy for cost allocation.
 - Terraform: providers, resources, data sources, variables/outputs, state (and remote state in S3 with locking), `plan` vs `apply`, modules, workspaces, import, drift, and what *not* to put in Terraform.
-- Cloud mapping: for every AWS service you use, name the GCP and Azure equivalent and one difference.
+- Cloud mapping: for every AWS service you use, name the Azure equivalent and one difference.
 
 ### 🧪 Hands-on exercises
 1. Create the AWS account, enable MFA on root, create an admin IAM user, set a US$50 budget with email alert. Never use root again.
@@ -754,7 +754,7 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 4. Update `ci.yml` to assume the OIDC role (`aws-actions/configure-aws-credentials`), pull the eval set from S3, push the image to ECR. No secrets stored in GitHub.
 5. Run MLflow server on the EC2 instance (docker compose, Postgres + S3 artefact store); point local training at it over an SSM port-forward.
 6. Run one full training on the EC2 instance from a `user_data` bootstrap script; confirm the run appears in MLflow; terminate the instance from Terraform.
-7. GCP: `gcloud` setup, Artifact Registry, deploy the serving image to Cloud Run, run one Vertex AI custom job with the training image. Azure: ACR, Container Apps, one Azure ML command job. Terraform both, screenshot, destroy.
+7. Azure: `az` setup, ACR, deploy the serving image to Azure Container Apps, run one Azure ML command job with the training image. Terraform it, screenshot, destroy.
 8. Look at Cost Explorer daily for two weeks and write down what each line item is.
 
 ### 💥 Common pitfalls & break-it drills
@@ -769,7 +769,7 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 - What is the difference between an IAM role and an IAM user? When would you use each?
 - Your training VM in a private subnet needs to `pip install`. What are the options and their costs?
 - What is in Terraform state and why is it sensitive?
-- Compare EKS, GKE and AKS in two sentences. Compare SageMaker and Vertex AI.
+- Compare EKS and AKS in two sentences. Compare SageMaker and Azure ML.
 - Your AWS bill doubled this month. How do you find out why?
 
 <details>
@@ -780,15 +780,14 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 - GitHub OIDC with AWS: https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
 - Terraform "Get Started – AWS": https://developer.hashicorp.com/terraform/tutorials/aws-get-started  ·  Terraform AWS provider docs
 - AWS Well-Architected Framework (skim the six pillars): https://aws.amazon.com/architecture/well-architected/
-- GCP Cloud Run quickstart: https://cloud.google.com/run/docs/quickstarts  ·  Vertex AI custom training: https://cloud.google.com/vertex-ai/docs/training/overview
 - Azure Container Apps quickstart: https://learn.microsoft.com/en-us/azure/container-apps/  ·  Azure ML command jobs: https://learn.microsoft.com/en-us/azure/machine-learning/how-to-train-model
-- Cloud service comparison table: https://cloud.google.com/docs/get-started/aws-azure-gcp-service-comparison
+- AWS-to-Azure service comparison: https://learn.microsoft.com/en-us/azure/architecture/aws-professional/services
 
 </details>
 
 ### 🏁 You can claim it when
 - [ ] `terraform apply` / `destroy` recreates all AWS infra from scratch, nothing was clicked in the console.
-- [ ] The serving container is reachable at a public URL on all three clouds (screenshots in README, then torn down).
+- [ ] The serving container is reachable at a public URL on both clouds (screenshots in README, then torn down).
 - [ ] You know your monthly bill to the dollar and have a budget alarm.
 
 <p align="right"><a href="#-master-task-tracker-start-here">⬆ Back to tracker</a></p>
@@ -1280,7 +1279,7 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 
 ### 📝 CV bullets you'll be able to write truthfully
 - Built an end-to-end MLOps pipeline for satellite land-cover classification: DVC + MLflow experiment tracking, Dockerised training/serving, GitHub Actions CI/CD with model quality gates, Helm-deployed FastAPI/ONNX inference on Kubernetes (EKS) with HPA, Prometheus/Grafana monitoring and Evidently drift-triggered retraining.
-- Provisioned infrastructure with Terraform on AWS (S3, ECR, EKS, EC2, IAM OIDC), with equivalent container deployments on GCP Cloud Run and Azure Container Apps.
+- Provisioned infrastructure with Terraform on AWS (S3, ECR, EKS, EC2, IAM OIDC), with an equivalent container deployment on Azure Container Apps and a managed Azure ML training job.
 - Built and CI-tested an offline, watchdog-supervised INT8 ONNX inference service for ARM64/Raspberry Pi with signed OTA model updates, designed for onboard-satellite constraints (power, no-network, A/B rollback); validated under ARM64 emulation.
 
 <p align="right"><a href="#-master-task-tracker-start-here">⬆ Back to tracker</a></p>
@@ -1295,7 +1294,7 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 - DVC docs "Get Started", MLflow docs "Tracking" + "Model Registry".
 - Docker docs "Get started" + "Best practices for Dockerfiles"; *Docker Deep Dive* (Poulton).
 - GitHub Actions docs; CML (iterative.ai) docs.
-- AWS Skill Builder free tier; Terraform "Get Started – AWS"; GCP/Azure free-tier docs for Cloud Run / Container Apps.
+- AWS Skill Builder free tier; Terraform "Get Started – AWS"; Azure free-tier docs for Container Apps and Azure ML.
 - Kubernetes docs "Concepts" + "Tasks"; *Kubernetes Up & Running*; kind docs; Helm docs.
 - Prometheus/Grafana docs; Evidently docs; Google SRE book chapter on monitoring.
 - ONNX Runtime quantisation docs; Docker buildx multi-platform docs; Raspberry Pi OS headless setup docs; QEMU aarch64 Pi boot guides; systemd watchdog docs; ESA Φ-sat-1 and OPS-SAT papers.
@@ -1315,7 +1314,7 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 | Reproducible ML | `dvc.yaml`, `params.yaml`, MLflow screenshots, `DESIGN.md`, tests |
 | Docker | `docker/` with size table in `docker/README.md`, Trivy report artefact in CI |
 | CI/CD | Green workflow runs, a PR blocked by the quality gate (link to it), a tagged release with image digest |
-| AWS / GCP / Azure | `infra/*` Terraform, screenshots of live URLs in `docs/assets/`, cost screenshot |
+| AWS / Azure | `infra/*` Terraform, screenshots of live URLs in `docs/assets/`, cost screenshot |
 | Kubernetes | Helm chart, k6 report, HPA scaling screenshot, rollback demo in the video |
 | Monitoring | Grafana JSON, alert rules, drift report HTML, `RUNBOOK.md`, drift-triggered retrain PR |
 | Edge | Optimisation table, arm64 image in GHCR, OTA tests green, soak-test output, provisioning README |
@@ -1328,7 +1327,7 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 
 - [ ] Budget alarm exists on every cloud account.
 - [ ] `terraform destroy` at the end of every session; check the console for orphaned load balancers, EBS volumes, NAT gateways, static IPs.
-- [ ] EKS/GKE/AKS clusters live for hours or days, never weeks.
+- [ ] EKS/AKS clusters live for hours or days, never weeks.
 - [ ] Use spot for anything restartable; use `t3`/`c6i` CPU instances for training here.
 - [ ] Tag everything `project=orbiteye` and filter Cost Explorer by tag weekly.
 

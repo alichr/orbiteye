@@ -41,7 +41,7 @@ The model is deliberately simple — a fine-tuned ResNet-18, later distilled int
 - reproducible data and experiment management,
 - containerised training and serving,
 - CI/CD with automated model-quality gates,
-- infrastructure as code on AWS (with equivalent deployments on GCP and Azure),
+- infrastructure as code on AWS (with an equivalent deployment on Azure),
 - a Kubernetes inference service with autoscaling, monitoring and drift-triggered retraining,
 - and an offline, watchdog-supervised edge service for ARM64 / Raspberry Pi with signed over-the-air model updates, designed around onboard-satellite constraints.
 
@@ -129,7 +129,7 @@ Each skill maps to concrete, reviewable artefacts in this repository.
 | **Docker** | [`docker/`](docker/), [`docker-compose.yml`](docker-compose.yml) | Multi-stage builds, non-root, pinned digests, < 1 GB serving image, Trivy-scanned, multi-arch (amd64 + arm64) |
 | **CI/CD** | [`.github/workflows/`](.github/workflows/) | Lint → tests → data contracts → smoke training → **model quality gate** → image build → Helm deploy on tag; scheduled retraining |
 | **AWS** | [`infra/aws/`](infra/aws/) | Terraform: S3, ECR, EKS, EC2, IAM with GitHub OIDC (no long-lived keys), budget alarms |
-| **GCP / Azure** | [`infra/gcp/`](infra/gcp/), [`infra/azure/`](infra/azure/) | Same serving container on Cloud Run and Azure Container Apps; managed training jobs on Vertex AI and Azure ML |
+| **Azure** | [`infra/azure/`](infra/azure/) | Same serving container on Azure Container Apps; managed training job on Azure ML |
 | **Kubernetes** | [`deploy/helm/orbiteye/`](deploy/helm/orbiteye/), [`deploy/kind/`](deploy/kind/) | Helm chart, probes, resource limits, HPA, rolling updates & rollback, RBAC; local `kind` → EKS |
 | **Model serving** | [`serving/`](serving/) | FastAPI + ONNX Runtime, Pydantic validation, `/healthz` `/readyz` `/metrics`, load-tested with k6 |
 | **Model monitoring** | [`deploy/monitoring/`](deploy/monitoring/), [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | Prometheus + Grafana dashboards (committed as JSON), Alertmanager rules, Evidently data-drift reports, drift → automated retraining |
@@ -209,7 +209,7 @@ The project was built in deliberate stages, one skill at a time. Each stage has 
 | 2 | ML design, DVC, MLflow | `DESIGN.md`, `dvc.yaml`, tracked baseline | ⬜ |
 | 3 | Docker | train/serve images, compose tracking stack | ⬜ |
 | 4 | CI/CD | `ci.yml`, `release.yml`, quality gate | ⬜ |
-| 5 | Cloud: AWS (+ GCP, Azure) | Terraform modules, OIDC, remote MLflow | ⬜ |
+| 5 | Cloud: AWS (+ Azure) | Terraform modules, OIDC, remote MLflow | ⬜ |
 | 6 | Kubernetes & serving | Helm chart, kind → EKS, HPA, rollback drill | ⬜ |
 | 7 | Monitoring | Grafana dashboards, drift job, runbook | ⬜ |
 | 8 | Edge deployment | INT8 export, arm64 image, onboard service, OTA cycle | ⬜ |
@@ -254,7 +254,7 @@ orbiteye/
 ├── docker/            Dockerfiles for train / serve
 ├── serving/           FastAPI + ONNX Runtime inference service
 ├── deploy/            Helm chart, kind setup, monitoring stack
-├── infra/             Terraform for AWS, GCP, Azure
+├── infra/             Terraform for AWS and Azure
 ├── edge/              quantisation, arm64 image, onboard service, OTA cycle
 ├── tests/             unit, contract and integration tests
 ├── .github/workflows/ CI, release, edge, nightly retraining
@@ -266,7 +266,7 @@ orbiteye/
 ## Honesty notes
 
 - Cloud resources are torn down between demos; everything can be recreated with `terraform apply`. Screenshots of live deployments are in [`docs/assets/`](docs/assets/).
-- AWS is the primary cloud and is covered in depth. GCP and Azure deployments are real but thinner: the same container on a serverless runtime plus one managed training job each.
+- AWS is the primary cloud and is covered in depth. The Azure deployment is real but thinner: the same container on Azure Container Apps plus one Azure ML training job.
 - The edge stack is validated under ARM64 emulation. No physical Raspberry Pi was used; the image is ready to flash and the provisioning steps are documented and tested in an emulated Raspberry Pi OS.
 
 ---

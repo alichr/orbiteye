@@ -8,6 +8,7 @@ One file per stage, written while working through [`docs/LEARNING_PLAN.md`](../L
 | `review-log.md` | One line per Saturday spaced review: date · stage revisited · drill redone · questions answered |
 | `skills-audit.md` | Stage 9 self-rating per CV skill with links to evidence |
 | `linux-lab.md` | How to log in to, use, stop/start and tear down the Stage 1 EC2 Linux lab |
+| `aws-mental-model.md` | Account → IAM → EC2 → other services → SageMaker; how the AWS pieces relate |
 
 Notes are part of the evidence a reviewer can read, so keep them honest and in plain language.
 

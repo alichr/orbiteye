@@ -70,6 +70,25 @@ Legend: ⬜ not started · 🟨 in progress · ✅ complete. Update this table *
 | **E. Break-it drills** | Deliberately break things and fix them | Fri |
 | **F. Interview & close-out** | Answer questions aloud, tick the claim checklist, update README, commit | Sat |
 
+### 🧭 Skill coverage map
+
+Every skill on the target CV line, where it is learned, what proves it, and where it is revisited so it does not fade. If a row ever looks thin, that is the stage to slow down on.
+
+| CV skill | Learned deeply in | Revisited in | Proof in the repo | Claim criterion |
+|---|---|---|---|---|
+| **Linux** | Stage 1 (EC2 lab: users, sudo, SSH, systemd, cron, disk, signals) | 5 (SSM, user data), 8 (embedded systemd, watchdog, hardening) | `docs/notes/stage-1.md`, `edge/onboard/*.service`, `edge/provision/` | Stage 1 & 8 🏁 |
+| **Git** | Stage 1 (branching, rebase, reflog, bisect, filter-repo, hooks) | every stage via PR workflow; 4 (tags, protection) | commit history, PRs, `.pre-commit-config.yaml` | Stage 1 🏁 |
+| **ML design & reproducibility** | Stage 2 (framing, DVC, MLflow, tests) | 4 (quality gate), 7 (drift → retrain) | `DESIGN.md`, `dvc.yaml`, `tests/`, MLflow registry | Stage 2 🏁 |
+| **Docker** | Stage 3 | 4 (build-push, cache), 6 (serve image), 8 (arm64 multi-arch) | `docker/`, `docker-compose.yml`, size table, Trivy report | Stage 3 🏁 |
+| **CI/CD** | Stage 4 (Actions, gates, release, nightly) | 5 (OIDC to AWS/Azure), 6 (helm deploy), 7 (repository_dispatch), 8 (`edge.yml`) | `.github/workflows/*`, blocked-PR link, tagged release | Stage 4 🏁 |
+| **AWS** | Stage 5 (IAM, S3, ECR, EC2, VPC, CloudWatch, Terraform) | 6 (EKS, IRSA, ALB), 7 (S3 logs), 8 (signed bundles in S3) | `infra/aws/`, cost screenshot | Stage 5 🏁 |
+| **Azure** | Stage 5 (Entra ID OIDC, ACR, Container Apps, Azure ML) | 6 (optional AKS stretch) | `infra/azure/`, live-URL screenshot | Stage 5 🏁 |
+| **Kubernetes** | Stage 6 (kind → EKS, Helm, probes, HPA, RBAC, rollback) | 7 (CronJob, ServiceMonitor, Prometheus stack) | `deploy/helm/`, `deploy/kind/`, HPA screenshot | Stage 6 🏁 |
+| **Model serving** | Stage 6 (FastAPI + ONNX Runtime, k6) | 7 (instrumentation), 8 (same model on ARM) | `serving/`, k6 report | Stage 6 🏁 |
+| **Model monitoring** | Stage 7 (Prometheus, Grafana, Evidently, SLOs, Loki) | 8 (telemetry, soak test) | `deploy/monitoring/`, `RUNBOOK.md`, drift report | Stage 7 🏁 |
+| **Edge deployment** | Stage 8 (INT8, distillation, arm64, systemd, OTA) | 9 (demo) | `edge/`, optimisation table, `edge.yml` green | Stage 8 🏁 |
+| **End-to-end delivery** | Stage 9 | — | README results, ADRs, demo video | Stage 9 🏁 |
+
 ---
 
 <a id="project"></a>
@@ -159,6 +178,7 @@ Create free accounts now so they are ready when needed: GitHub (done), AWS (free
 4. **Break it** (see "Common pitfalls & break-it drills"). Interview questions are almost always "what happens when X goes wrong".
 5. **Answer the interview questions out loud**, without notes, and record yourself once. Fix the gaps.
 6. **Tick the checklist**, update the status table in the root `README.md`, and write a 10-line "what I learned" at the end of `docs/notes/stage-N.md`. Commit.
+7. **Spaced review (from stage 2 onward).** Skills learned in week 1 fade by week 12 unless you touch them again. Every Saturday, pick one *earlier* stage (rotate), redo one of its break-it drills and answer three of its interview questions aloud, without notes. Log it in one line in `docs/notes/review-log.md`. This is a 30-minute habit that turns "I did it once" into "I know it".
 
 ### 📆 Weekly rhythm (8–10 h)
 
@@ -168,6 +188,7 @@ Create free accounts now so they are ready when needed: GitHub (done), AWS (free
 | Tue–Thu | 5–6 h | Build + exercises |
 | Fri | 1 h | Break-it drills |
 | Sat | 1 h | Interview questions aloud, checklist, README status, commit |
+| Sat | 30 min | Spaced review of one earlier stage (drill + 3 questions) → `docs/notes/review-log.md` |
 
 ---
 
@@ -209,6 +230,8 @@ Create free accounts now so they are ready when needed: GitHub (done), AWS (free
 - [ ] Ex 4 (Git): messy branch of 6 commits → interactive squash to 2 → recover the original 6 via `git reflog`. Do it in your own terminal.
 - [ ] Ex 5 (Git): commit a 50 MB file, push, remove from history with `git filter-repo`, force-push.
 - [ ] Ex 6: pre-commit installed and running on every commit (done in C, verify by committing a badly formatted file).
+- [ ] Ex 7 (Git): on a branch of 10 commits, one silently breaks a test; find it with `git bisect run pytest`.
+- [ ] Ex 8 (EC2): long-running job in `tmux` (detach, reattach, second window with `htop`); cron job every 5 min that `rsync`s a folder to a backup dir and appends to a log; verify with `journalctl` / `crontab -l`.
 
 **💥 E. Break-it drills**
 - [ ] Break `sshd_config` on purpose with a second session open; recover.
@@ -263,6 +286,8 @@ orbiteye/
 4. Git: create a messy branch with 6 commits, interactively squash into 2 clean commits, then use `git reflog` to recover the original 6 after "losing" them. (Interactive rebase must be done in your own terminal, not through an AI tool.)
 5. Deliberately commit a 50 MB file, push, then remove it from history with `git filter-repo` and force-push. Now you know why data goes in DVC.
 6. Set up `pre-commit` with `ruff`, `ruff-format`, `end-of-file-fixer`, `check-added-large-files`.
+7. Git: make a branch with 10 small commits where one of them silently breaks a test. Use `git bisect run pytest -q` to find it automatically. Explain what bisect does with the good/bad markers.
+8. On the EC2 box: start a long-running Python job inside `tmux`, detach, reconnect over SSH and reattach; open a second `tmux` window with `htop` and find the process. Then write a cron entry that runs every 5 minutes, `rsync`s a directory to a backup folder and appends a timestamped line to a log file. Verify it ran with `crontab -l` and the log.
 
 ### 💥 Common pitfalls & break-it drills
 - Locking yourself out of SSH by breaking `sshd_config`: always test in a second session before closing the first.
@@ -340,6 +365,7 @@ orbiteye/
 - [ ] Ex 4: `infer_signature` added; load `models:/orbiteye/Production` back in a fresh process.
 - [ ] Ex 5: make the overfit test fail on purpose (LR = 0), then restore.
 - [ ] Ex 6: reproduce an old run from its commit hash only: `git checkout <sha> && dvc pull && dvc repro`.
+- [ ] Ex 7: three `dvc exp run --set-param` experiments; compare with `dvc exp show`; `dvc exp apply` the best one and commit.
 
 **💥 E. Break-it drills**
 - [ ] Delete `.dvc/cache` → `dvc pull` restores it.
@@ -349,6 +375,7 @@ orbiteye/
 - [ ] Understand `--default-artifact-root` by pointing MLflow at a path a container can't see.
 
 **🎤 F. Interview & close-out**
+- [ ] 🔁 Spaced review: redo one break-it drill and answer 3 interview questions from an earlier stage, without notes; log it in `docs/notes/review-log.md`.
 - [ ] Answer the 5 interview questions aloud; record once.
 - [ ] Tick all 3 "You can claim it when" boxes.
 - [ ] 10-line "what I learned" in `docs/notes/stage-2.md`.
@@ -381,6 +408,7 @@ orbiteye/
 4. Add `mlflow.models.infer_signature` and load the registered model back with `mlflow.pyfunc.load_model("models:/orbiteye/Production")` in a fresh process.
 5. Write the six tests listed above; make the overfit test fail on purpose by zeroing the learning rate.
 6. Reproduce a run from two weeks ago (or from another branch) using only its commit hash.
+7. Run three experiments with `dvc exp run --set-param train.lr=...` without committing; compare them with `dvc exp show`; `dvc exp apply` the best and commit it. Explain how this differs from MLflow runs and when you would use each.
 
 ### 💥 Common pitfalls & break-it drills
 - Committing `data/` to git; forgetting `dvc push`; a teammate (future you) doing `dvc pull` and getting nothing.
@@ -468,6 +496,7 @@ orbiteye/
 - [ ] `docker system df` → `docker system prune`; explain what was safe.
 
 **🎤 F. Interview & close-out**
+- [ ] 🔁 Spaced review: redo one break-it drill and answer 3 interview questions from an earlier stage, without notes; log it in `docs/notes/review-log.md`.
 - [ ] Answer the 5 interview questions aloud; record once.
 - [ ] Tick all 3 "You can claim it when" boxes.
 - [ ] 10-line "what I learned" in `docs/notes/stage-3.md`.
@@ -578,6 +607,9 @@ orbiteye/
 - [ ] Ex 5: `nightly-train.yml` runs and opens a PR.
 - [ ] Ex 6: try pushing directly to `main`; get rejected.
 - [ ] Ex 7: SHA-pin all actions; Dependabot enabled.
+- [ ] Ex 8: factor repeated setup steps into a composite action in `.github/actions/setup/`; use it from all three workflows.
+- [ ] Ex 9: `production` GitHub Environment with a required reviewer; the deploy job in `release.yml` waits for your approval.
+- [ ] Ex 10: container smoke test in CI: run the built serving image, `curl` `/healthz` and `/predict` with a sample patch, fail on non-200.
 
 **💥 E. Break-it drills**
 - [ ] Open a PR with a deliberately bad config; watch the quality gate block it; fix; merge. **Keep the link** (Appendix A evidence).
@@ -585,6 +617,7 @@ orbiteye/
 - [ ] Keep PR CI under 10 min; push heavy work to nightly.
 
 **🎤 F. Interview & close-out**
+- [ ] 🔁 Spaced review: redo one break-it drill and answer 3 interview questions from an earlier stage, without notes; log it in `docs/notes/review-log.md`.
 - [ ] Answer the 5 interview questions aloud; record once.
 - [ ] Tick all 3 "You can claim it when" boxes.
 - [ ] 10-line "what I learned" in `docs/notes/stage-4.md`.
@@ -616,6 +649,9 @@ orbiteye/
 5. Write `nightly-train.yml` on `schedule` + `workflow_dispatch` that retrains on full data (CPU, few epochs), logs to MLflow, and opens a PR if the new model beats Production.
 6. Turn on branch protection: required checks, no direct pushes, linear history. Try to push to `main` directly and get rejected.
 7. Pin every third-party action to a commit SHA; enable Dependabot for actions and pip.
+8. Factor the repeated "checkout → install uv → restore cache → install deps" steps into a composite action under `.github/actions/setup/` and use it from `ci.yml`, `release.yml` and `nightly-train.yml`.
+9. Create a `production` GitHub Environment with yourself as required reviewer. Make the deploy job in `release.yml` target it so a tag builds and pushes the image automatically but waits for your click before deploying. Explain when manual approval is right and when it is theatre.
+10. Add a container smoke test to `ci.yml`: start the freshly built serving image, wait for `/healthz`, `POST` a sample patch to `/predict`, assert a 200 and a valid class name. This is the test that catches "works in pytest, broken in the image".
 
 ### 💥 Common pitfalls & break-it drills
 - `pull_request` from forks cannot see secrets; understand `pull_request_target` risks.
@@ -695,7 +731,8 @@ orbiteye/
 - [ ] Ex 4: `ci.yml` on OIDC (`aws-actions/configure-aws-credentials`).
 - [ ] Ex 5: remote MLflow on EC2; local training logs to it.
 - [ ] Ex 6: one full training on EC2 via `user_data`; run appears in MLflow; `terraform destroy` the instance.
-- [ ] Ex 7: Azure ACR + Container Apps + one Azure ML job; Terraform, screenshot, destroy.
+- [ ] Ex 7: Azure: Entra ID app + federated credential so GitHub Actions logs in via OIDC (`azure/login`, no secret); ACR; Container Apps; one Azure ML job; Blob Storage as a second DVC remote; budget alert. Terraform, screenshot, destroy.
+- [ ] Ex 9: CloudWatch alarm (EC2 CPU > 80 % for 5 min → SNS email) and MLflow container logs shipped to a CloudWatch Logs group with 7-day retention.
 - [ ] Ex 8: check Cost Explorer daily for two weeks; write down every line item.
 
 **💥 E. Break-it drills**
@@ -704,6 +741,7 @@ orbiteye/
 - [ ] Audit for orphaned NAT gateways / EBS / LBs / static IPs after every `destroy`.
 
 **🎤 F. Interview & close-out**
+- [ ] 🔁 Spaced review: redo one break-it drill and answer 3 interview questions from an earlier stage, without notes; log it in `docs/notes/review-log.md`.
 - [ ] Answer the 6 interview questions aloud; record once.
 - [ ] Tick all 3 "You can claim it when" boxes.
 - [ ] 10-line "what I learned" in `docs/notes/stage-5.md`.
@@ -754,8 +792,9 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 4. Update `ci.yml` to assume the OIDC role (`aws-actions/configure-aws-credentials`), pull the eval set from S3, push the image to ECR. No secrets stored in GitHub.
 5. Run MLflow server on the EC2 instance (docker compose, Postgres + S3 artefact store); point local training at it over an SSM port-forward.
 6. Run one full training on the EC2 instance from a `user_data` bootstrap script; confirm the run appears in MLflow; terminate the instance from Terraform.
-7. Azure: `az` setup, ACR, deploy the serving image to Azure Container Apps, run one Azure ML command job with the training image. Terraform it, screenshot, destroy.
+7. Azure, mirroring what you did on AWS: (a) `az login`, subscription budget alert; (b) Entra ID app registration + federated credential scoped to `repo:alichr/orbiteye` so GitHub Actions can `azure/login` with OIDC and **no stored secret**; (c) ACR with the CI pushing the serving image; (d) Azure Container Apps running that image at a public URL; (e) one Azure ML command job using the training image; (f) a Blob Storage container configured as a second DVC remote (`dvc remote add azure ...`, `dvc push -r azure`). Terraform all of it, screenshot the URL and the job, `terraform destroy`.
 8. Look at Cost Explorer daily for two weeks and write down what each line item is.
+9. CloudWatch: create an alarm on the training EC2 instance (CPU > 80 % for 5 min → SNS topic → your email) and trigger it with `stress`. Install the CloudWatch agent (or use the `awslogs` Docker log driver) so the MLflow container logs land in a Logs group with 7-day retention. Terraform both.
 
 ### 💥 Common pitfalls & break-it drills
 - Leaving an instance or a NAT gateway running: NAT gateways cost ~US$32/month even idle. Destroy when done.
@@ -770,6 +809,7 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 - Your training VM in a private subnet needs to `pip install`. What are the options and their costs?
 - What is in Terraform state and why is it sensitive?
 - Compare EKS and AKS in two sentences. Compare SageMaker and Azure ML.
+- How does GitHub Actions authenticate to Azure without a secret? How does that compare to the AWS OIDC flow?
 - Your AWS bill doubled this month. How do you find out why?
 
 <details>
@@ -789,6 +829,7 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 - [ ] `terraform apply` / `destroy` recreates all AWS infra from scratch, nothing was clicked in the console.
 - [ ] The serving container is reachable at a public URL on both clouds (screenshots in README, then torn down).
 - [ ] You know your monthly bill to the dollar and have a budget alarm.
+- [ ] CI authenticates to **both** AWS and Azure via OIDC; `gh secret list` shows no cloud credentials.
 
 <p align="right"><a href="#-master-task-tracker-start-here">⬆ Back to tracker</a></p>
 
@@ -838,12 +879,16 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 - [ ] Ex 7: metrics-server + k6; `kubectl get hpa -w` scales 1 → 4 → 1.
 - [ ] Ex 8: EKS via Terraform; chart with IRSA; ALB; same load test; screenshot; **destroy same day**.
 - [ ] Ex 9: `kubectl` fluency drill without docs.
+- [ ] Ex 10: least-privilege RBAC for the drift CronJob (ServiceAccount + Role + RoleBinding); prove with `kubectl auth can-i`; create a Secret from CI with `--set`, mount it as env, decode it to show it is only base64.
+- [ ] Ex 11: ingress-nginx in kind + an Ingress in the chart; `/predict` reachable on `localhost`; note ALB is the EKS equivalent.
+- [ ] Ex 12 (optional stretch): same Helm chart on a 1-node AKS via Terraform for one hour; compare with EKS; destroy.
 
 **💥 E. Break-it drills**
 - [ ] `kubectl delete pod`; explain what recreated it. `kubectl drain` a node; watch pods move.
 - [ ] Cause `ImagePullBackOff`, `CrashLoopBackOff`, `Pending`; diagnose each from `describe` + `logs` only.
 
 **🎤 F. Interview & close-out**
+- [ ] 🔁 Spaced review: redo one break-it drill and answer 3 interview questions from an earlier stage, without notes; log it in `docs/notes/review-log.md`.
 - [ ] Answer the interview questions aloud; record once.
 - [ ] Tick all 3 "You can claim it when" boxes.
 - [ ] 10-line "what I learned" in `docs/notes/stage-6.md`.
@@ -877,6 +922,9 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 7. Install metrics-server, drive load with k6, watch `kubectl get hpa -w` scale 1 → 4 → 1.
 8. Terraform an EKS cluster (`terraform-aws-modules/eks`), install the chart with IRSA for S3 access, expose via ALB Ingress, run the same load test, screenshot, **destroy the cluster the same day**.
 9. `kubectl` fluency drill: without docs, do `get/describe/logs -f --previous/exec -it/port-forward/top/rollout status/rollout undo/explain`.
+10. RBAC and Secrets: give the (stage 7) drift `CronJob` its own ServiceAccount with a Role that can only read ConfigMaps in its namespace; prove it with `kubectl auth can-i --as=system:serviceaccount:...`. Create a Secret from CI with `helm --set` (never in `values.yaml`), mount it as an env var, then `kubectl get secret -o yaml | base64 -d` to see why Secrets are not encryption.
+11. Install ingress-nginx in kind and add an `Ingress` to the chart so `/predict` is reachable at `http://localhost/predict`; understand that the AWS Load Balancer Controller plays the same role on EKS with an ALB.
+12. *(Optional stretch, ~1 h, uses Azure credits)* Deploy the same Helm chart to a one-node AKS cluster via Terraform, hit `/predict`, note three differences from EKS (identity, load balancer, node pools), `terraform destroy`. This turns the Azure claim from "Container Apps" into "I have run my chart on AKS too".
 
 ### 💥 Common pitfalls & break-it drills
 - No resource requests → scheduler packs pods → noisy neighbours. No limits → one pod eats the node.
@@ -963,6 +1011,8 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 - [ ] Ex 6: run the 3 drift simulations (2,000 requests each); record which signal fired first in notes.
 - [ ] Ex 7: drift alert triggers retraining PR.
 - [ ] Ex 8: `RUNBOOK.md` written.
+- [ ] Ex 9: SLOs as recording rules (99.5 % availability, p95 < 300 ms) + a multi-window burn-rate alert; SLO panel in Grafana.
+- [ ] Ex 10: delayed-labels loop: script "returns" labels for 10 % of logged inferences after a delay; rolling macro-F1 gauge; alert on drop.
 
 **💥 E. Break-it drills**
 - [ ] Kill Prometheus; see what is lost; add persistence.
@@ -970,6 +1020,7 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 - [ ] Add a high-cardinality label (e.g. request ID) to a metric; watch memory; remove it.
 
 **🎤 F. Interview & close-out**
+- [ ] 🔁 Spaced review: redo one break-it drill and answer 3 interview questions from an earlier stage, without notes; log it in `docs/notes/review-log.md`.
 - [ ] Answer the interview questions aloud; record once.
 - [ ] Tick both "You can claim it when" boxes.
 - [ ] 10-line "what I learned" in `docs/notes/stage-7.md`.
@@ -1006,6 +1057,8 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 6. Simulate drift: a script that sends 2,000 requests of EuroSAT images with (a) added haze, (b) reduced brightness (winter), (c) channel swap (new sensor). Watch the drift score, the confidence gauge and the class-distribution alert. Record which signal fired first for each shift and write it in `docs/notes/stage-7.md`.
 7. Wire the drift alert to trigger `nightly-train.yml` via `repository_dispatch`; the retrain opens a PR that must pass the quality gate and be approved by you.
 8. Write `RUNBOOK.md`: for each alert → meaning, likely causes, first three commands to run, escalation.
+9. Define two SLOs for the service (availability 99.5 %, p95 latency < 300 ms over 30 days) as Prometheus recording rules, add a multi-window burn-rate alert (fast: 1 h/5 m, slow: 6 h/30 m), and an SLO/error-budget panel in Grafana. Explain why burn-rate beats a static threshold.
+10. Close the label loop: write a script that "receives" ground-truth labels for 10 % of logged inferences 24 h later (use the EuroSAT test labels), computes rolling macro-F1 over the last 1,000 labelled predictions, pushes it as a gauge, and alerts when it drops 3 points below the offline test score. This is how you detect concept drift when labels are delayed.
 
 ### 💥 Common pitfalls & break-it drills
 - High-cardinality labels (request ID as a Prometheus label) → Prometheus falls over. Understand cardinality.
@@ -1092,6 +1145,7 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 - [ ] Ex 8: OTA cycle with all three failure tests (tampered signature, corrupt model rollback, power-cut).
 - [ ] Ex 9: soak test: 10 min in CI, 24 h once locally; RSS growth < 5 %, zero budget misses.
 - [ ] Ex 10: energy per inference estimate (CPU time × 5 W) with assumption in README.
+- [ ] Ex 11: `systemd-analyze security orbiteye.service` in the emulated Pi; add hardening until the exposure score is below 5.
 
 **💥 E. Break-it drills**
 - [ ] Inspect the quantised graph for ops that fell back to FP32.
@@ -1100,6 +1154,7 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 - [ ] Flip one byte in the signed model; verification fails *before* load.
 
 **🎤 F. Interview & close-out**
+- [ ] 🔁 Spaced review: redo one break-it drill and answer 3 interview questions from an earlier stage, without notes; log it in `docs/notes/review-log.md`.
 - [ ] Answer the interview questions aloud; record once.
 - [ ] Tick all 4 "You can claim it when" boxes.
 - [ ] 10-line "what I learned" in `docs/notes/stage-8.md`.
@@ -1181,6 +1236,7 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 8. Implement the OTA cycle: `sign_bundle.py` (ground/CI), `downlink.py` (verify → install to inactive slot → self-test on 20 golden images → switch or rollback), `uplink.py`. Tests: tampered signature rejected; corrupted model fails self-test and rolls back; power-cut mid-install (kill during copy) leaves the active slot intact.
 9. 10-minute soak test in CI (24 h once locally): assert RSS growth < 5 % and zero budget misses.
 10. Estimate energy per inference: CPU time × assumed 5 W for a Pi 4 under load; put the number and the assumption in the README.
+11. Run `systemd-analyze security orbiteye.service` inside the emulated Pi OS. Add hardening directives (`ProtectSystem=strict`, `ProtectHome`, `PrivateTmp`, `NoNewPrivileges`, `RestrictAddressFamilies=AF_UNIX`, `MemoryMax`, `CapabilityBoundingSet=`) until the exposure score is below 5.0 and the service still passes its tests. Note that `RestrictAddressFamilies` is what makes "no network in onboard mode" enforced by the OS, not just by your code.
 
 ### 💥 Common pitfalls & break-it drills
 - Dynamic input shapes and `Resize` ops that silently fall back to FP32 after quantisation; inspect the quantised graph.
@@ -1263,11 +1319,13 @@ On Azure, using free credits: push your serving image to ACR, deploy it to Azure
 **🧪 D. Exercises**
 - [ ] Do a full fresh-clone run-through of the Quickstart on a clean machine or container; fix everything that breaks.
 - [ ] Recreate the whole AWS stack with `terraform apply`, record the demo, `terraform destroy`.
+- [ ] Write `docs/notes/skills-audit.md`: for every row of the Skill coverage map, rate yourself 1–5, link the evidence, and list one thing you would still struggle to explain. Fix the 5 weakest items before calling the project done.
 
 **💥 E. Break-it drills**
 - [ ] Ask a friend (or an AI) to interview you for 30 min using the interview questions from all stages, without notes.
 
 **🎤 F. Close-out**
+- [ ] 🔁 Spaced review: redo one break-it drill and answer 3 interview questions from an earlier stage, without notes; log it in `docs/notes/review-log.md`.
 - [ ] Tear down all cloud resources; confirm zero spend next month.
 - [ ] Write the three CV bullets below into your CV, truthfully.
 - [ ] Stage 9 ✅ in tracker + `README.md`; final commit; tag `v1.0.0`.

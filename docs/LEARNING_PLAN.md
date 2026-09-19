@@ -13,6 +13,38 @@ proves it. You do not move to the next stage until the "You can claim it when…
 
 ---
 
+## 📋 Master task tracker (start here)
+
+Every stage below opens with a **"Your tasks"** checklist: every single thing you must do for that stage, in order, as tick-boxes. Tick them in this file as you go and commit. The detail sections after each checklist (Learn / Build / Exercises / Drills / Interview / Resources) explain *how*; the checklist is *what*.
+
+| # | Stage | Weeks | Jump to tasks | Status |
+|---|---|---|---|---|
+| 0 | Prerequisites & Mac setup | Day 1 | [Stage 0 tasks](#-your-tasks--stage-0-setup) | ⬜ |
+| 1 | Linux + Git repo skeleton | 1 | [Stage 1 tasks](#-your-tasks--stage-1) | ⬜ |
+| 2 | ML design, DVC, MLflow | 2–3 | [Stage 2 tasks](#-your-tasks--stage-2) | ⬜ |
+| 3 | Docker | 4 | [Stage 3 tasks](#-your-tasks--stage-3) | ⬜ |
+| 4 | CI/CD | 5 | [Stage 4 tasks](#-your-tasks--stage-4) | ⬜ |
+| 5 | Cloud: AWS (+ GCP, Azure) | 6–7 | [Stage 5 tasks](#-your-tasks--stage-5) | ⬜ |
+| 6 | Serving + Kubernetes | 8–9 | [Stage 6 tasks](#-your-tasks--stage-6) | ⬜ |
+| 7 | Monitoring | 10 | [Stage 7 tasks](#-your-tasks--stage-7) | ⬜ |
+| 8 | Edge deployment | 11–12 | [Stage 8 tasks](#-your-tasks--stage-8) | ⬜ |
+| 9 | Capstone | final | [Stage 9 tasks](#-your-tasks--stage-9) | ⬜ |
+
+Legend: ⬜ not started · 🟨 in progress · ✅ complete. Update this table **and** the status table in the root `README.md` when a stage is done.
+
+**The same six task groups repeat in every stage** (they mirror "How to study each stage" below):
+
+| Group | What it means | When |
+|---|---|---|
+| **A. Setup** | Tools/accounts you need before you start | first hour |
+| **B. Concepts & notes** | Write `docs/notes/stage-N.md` explaining every core concept in your own words | Mon |
+| **C. Build** | The artefacts that must exist in the repo | Tue–Thu |
+| **D. Exercises** | The numbered hands-on exercises | Tue–Thu |
+| **E. Break-it drills** | Deliberately break things and fix them | Fri |
+| **F. Interview & close-out** | Answer questions aloud, tick the claim checklist, update README, commit | Sat |
+
+---
+
 ## 0. The project (keep it deliberately simple)
 
 | Item | Choice | Why |
@@ -53,6 +85,19 @@ The ML is intentionally boring. All the learning is in the lifecycle around it.
 ## Before you start: prerequisites, setup, and how to study
 
 **Assumed:** you can write Python comfortably, know what a CNN is, and have trained a model in a notebook before. Everything else is taught here.
+
+### ✅ Your tasks — Stage 0 (setup)
+
+**A. Setup**
+- [ ] Install Homebrew tools: `git gh uv pyenv tmux htop jq yq tree wget` and `kind kubectl helm k6 terraform awscli trivy qemu`.
+- [ ] Install Docker Desktop; enable "Use Rosetta"; set RAM to 8 GB.
+- [ ] Install `google-cloud-sdk` (cask) and `azure-cli` (can wait until stage 5).
+- [ ] `uv python install 3.12`; create `.venv`; install the package list below.
+- [ ] Run the sanity line: `docker run --rm hello-world && kind version && kubectl version --client && terraform -version`.
+- [ ] Create accounts: AWS (set a **US$50 budget alarm immediately**), GCP, Azure. Optional: Docker Hub, Grafana Cloud.
+- [ ] Create `docs/notes/` folder in the repo (one `stage-N.md` file per stage will live here).
+- [ ] Read "How to study each stage" and "Weekly rhythm" below and block the hours in your calendar.
+
 
 ### One-time Mac setup (do this on day 1)
 
@@ -97,6 +142,47 @@ Create free accounts now so they are ready when needed: GitHub (done), AWS (free
 ---
 
 ## Stage 1 — Linux + Git: the professional repo skeleton  (Week 1)
+
+### ✅ Your tasks — Stage 1
+
+**A. Setup**
+- [ ] Python 3.12 venv active; `ruff`, `pre-commit`, `pytest`, `dvc` installed via `uv`.
+- [ ] Launch a free-tier `t3.micro` Ubuntu EC2 instance (key-pair SSH). This is your Linux lab for the whole stage.
+- [ ] Confirm `main` on GitHub is protected: PRs required, no direct pushes.
+
+**B. Concepts & notes** → `docs/notes/stage-1.md`
+- [ ] Linux: filesystem hierarchy, users/groups/permissions/sudo, processes & signals (SIGTERM vs SIGKILL), stdin/stdout/stderr & redirection, exit codes, env vs shell variables, `PATH`, symlinks, daemons, systemd units & `journalctl`, SSH keys & `~/.ssh/config`, `apt`, `df`/`du`, `ip`/`ss`/`curl`/ports/`/etc/hosts`, cron syntax.
+- [ ] Git: working tree / index / HEAD, commits as snapshots, branches as pointers, fast-forward vs merge vs rebase, detached HEAD, reflog, remotes & tracking branches, lightweight vs annotated tags, `.gitignore` semantics, why big binaries don't belong in git, what a PR is.
+- [ ] Python packaging: `pyproject.toml`, editable installs, lockfiles, virtual envs, entry points.
+
+**C. Build** (on a feature branch, merged via a self-reviewed PR)
+- [ ] Folder skeleton: `.github/workflows/`, `configs/`, `src/orbiteye/{data,model,train,evaluate,export}.py`, `serving/`, `deploy/`, `infra/`, `edge/`, `tests/`.
+- [ ] `pyproject.toml` (project metadata, deps, ruff + pytest config) and a `uv.lock`.
+- [ ] `Makefile` with at least `setup`, `lint`, `test` targets.
+- [ ] `.pre-commit-config.yaml`: `ruff`, `ruff-format`, `end-of-file-fixer`, `check-added-large-files`, plus a local `pytest` hook.
+- [ ] Extend `.gitignore` for ML: `data/`, `mlruns/`, `*.pt`, `*.ckpt`, `*.onnx`, `outputs/`.
+- [ ] One trivial test in `tests/` so `pytest` and the pre-commit hook are green.
+- [ ] Every commit uses Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`…).
+
+**D. Exercises**
+- [ ] Ex 1 (EC2): user `orbiteye`, passwordless `sudo` for one command only, SSH key-only auth, verify with `sshd -T`.
+- [ ] Ex 2 (EC2): systemd unit running a Python script that logs the time every 10 s; enable on boot; `journalctl -u`; `Restart=on-failure`; `kill -9` → it comes back.
+- [ ] Ex 3 (EC2): one-liner printing the 5 largest files under `/var` in MB.
+- [ ] Ex 4 (Git): messy branch of 6 commits → interactive squash to 2 → recover the original 6 via `git reflog`. Do it in your own terminal.
+- [ ] Ex 5 (Git): commit a 50 MB file, push, remove from history with `git filter-repo`, force-push.
+- [ ] Ex 6: pre-commit installed and running on every commit (done in C, verify by committing a badly formatted file).
+
+**E. Break-it drills**
+- [ ] Break `sshd_config` on purpose with a second session open; recover.
+- [ ] Practise `git push --force-with-lease` and explain why not `--force`.
+- [ ] Fill the EC2 disk with `fallocate` until things fail; find the culprit with `du`; clean up.
+
+**F. Interview & close-out**
+- [ ] Answer the 5 interview questions aloud without notes; record yourself once; fix gaps.
+- [ ] Tick all 3 "You can claim it when" boxes at the end of this stage.
+- [ ] Write the 10-line "what I learned" at the end of `docs/notes/stage-1.md`.
+- [ ] Set Stage 1 to ✅ in the tracker above and in `README.md`; commit; **stop the EC2 instance**.
+
 
 **Skill claimed:** Git, Linux
 
@@ -173,6 +259,53 @@ orbiteye/
 
 ## Stage 2 — ML design, data versioning and experiment tracking  (Week 2–3)
 
+### ✅ Your tasks — Stage 2
+
+**A. Setup**
+- [ ] `dvc`, `mlflow`, `hydra-core`, `torch`, `torchvision`, `scikit-learn` in the venv.
+- [ ] Download EuroSAT RGB (~90 MB) into `data/raw/` (git-ignored).
+- [ ] `docs/notes/stage-2.md` created.
+
+**B. Concepts & notes** → `docs/notes/stage-2.md`
+- [ ] Problem framing: business vs model vs proxy metric; macro-F1 vs accuracy; offline vs online eval; frozen evaluation set.
+- [ ] Data: leakage (spatial leakage in satellite patches), stratified splits, data cards, dataset vs code versioning, content-addressable storage.
+- [ ] DVC: `.dvc` files, `dvc.yaml` deps/outs/params/metrics, cache, remotes, `dvc repro` graph, `dvc exp`.
+- [ ] MLflow: runs/experiments, tracking server vs backend store vs artefact store, registry & stage transitions, `pyfunc`, signatures.
+- [ ] Training engineering: seeds/nondeterminism, config-as-code, checkpointing, early stopping, LR schedules, freeze vs fine-tune.
+- [ ] Testing ML: shape/dtype, 2-batch overfit, invariance, data-contract, metric-vs-sklearn tests.
+
+**C. Build**
+- [ ] `docs/DESIGN.md` (Problem, Users, Metric, Data, Baseline, Risks incl. haze/seasonal/new-sensor, Evaluation plan, Failure modes) + data card + model card.
+- [ ] `src/orbiteye/data.py`: EuroSAT dataset, transforms, stratified 70/15/15 split with a documented split rule.
+- [ ] `src/orbiteye/model.py`: ResNet-18 fine-tune head.
+- [ ] `src/orbiteye/train.py`: trains on Mac (CPU/MPS), logs params/metrics/artefacts to MLflow, saves `model.pt` + `metrics.json`; Hydra/YAML config in `configs/baseline.yaml`; seeded.
+- [ ] `src/orbiteye/evaluate.py`: accuracy + macro-F1 + confusion matrix on the frozen test split.
+- [ ] `dvc init`; `dvc add data/`; local-folder remote; `dvc.yaml` with `prepare → train → evaluate`; `params.yaml`.
+- [ ] Baseline run reaching ~95 % accuracy; numbers into the README results table (from script output, not by hand).
+- [ ] Six tests in `tests/`: shape, overfit, invariance, data-contract, metric-vs-sklearn, config load.
+
+**D. Exercises**
+- [ ] Ex 1: `DESIGN.md` written (see C).
+- [ ] Ex 2: prove `dvc repro` skips unchanged stages; change one param → only `train`+`evaluate` rerun.
+- [ ] Ex 3: MLflow sweep of 8 runs (LR × augmentation); parallel-coordinates plot; register best; promote to Production with a note.
+- [ ] Ex 4: `infer_signature` added; load `models:/orbiteye/Production` back in a fresh process.
+- [ ] Ex 5: make the overfit test fail on purpose (LR = 0), then restore.
+- [ ] Ex 6: reproduce an old run from its commit hash only: `git checkout <sha> && dvc pull && dvc repro`.
+
+**E. Break-it drills**
+- [ ] Delete `.dvc/cache` → `dvc pull` restores it.
+- [ ] Corrupt one cached file → DVC detects it.
+- [ ] Try `dvc pull` on a fresh clone *without* having pushed; understand the failure; then `dvc push`.
+- [ ] Check EuroSAT filenames for adjacent-patch leakage; document the split rule in `DESIGN.md`.
+- [ ] Understand `--default-artifact-root` by pointing MLflow at a path a container can't see.
+
+**F. Interview & close-out**
+- [ ] Answer the 5 interview questions aloud; record once.
+- [ ] Tick all 3 "You can claim it when" boxes.
+- [ ] 10-line "what I learned" in `docs/notes/stage-2.md`.
+- [ ] Stage 2 ✅ in tracker + `README.md`; commit via PR.
+
+
 **Skill claimed:** "design" half of "design and deploy end-to-end ML models"; data/model versioning
 
 **Learn:**
@@ -236,6 +369,52 @@ orbiteye/
 
 ## Stage 3 — Docker  (Week 4)
 
+### ✅ Your tasks — Stage 3
+
+**A. Setup**
+- [ ] Docker Desktop running; `trivy` installed; `docker buildx ls` shows a multi-platform builder.
+- [ ] `docs/notes/stage-3.md` created.
+
+**B. Concepts & notes** → `docs/notes/stage-3.md`
+- [ ] Container = namespaces + cgroups + union FS; container vs VM.
+- [ ] Layers, build cache & invalidation, `COPY` order, `.dockerignore`, multi-stage, `ARG` vs `ENV`, `ENTRYPOINT` vs `CMD` (exec vs shell form, PID 1, signals), `USER`, `HEALTHCHECK`, `WORKDIR`.
+- [ ] Volumes vs bind mounts vs tmpfs; data lifetime.
+- [ ] Bridge networking, port publishing, compose DNS.
+- [ ] Registries, tags vs digests, why `latest` is dangerous, scanning/provenance.
+- [ ] Docker Desktop on Mac = Linux VM; `--platform` implications.
+- [ ] Compose: services, `depends_on` + healthchecks, `.env`, profiles.
+- [ ] Read-only: what `nvidia/cuda` images, NVIDIA Container Toolkit and `--gpus all` are.
+
+**C. Build**
+- [ ] `docker/Dockerfile.train`: multi-stage, CPU PyTorch wheels, non-root, pinned base digest, lockfile installed.
+- [ ] `docker/Dockerfile.serve`: slim CPU base, < 1 GB, non-root (used again in stage 6).
+- [ ] `.dockerignore` excluding `data/`, `.venv/`, `mlruns/`, `.git/`.
+- [ ] `docker-compose.yml`: MLflow server + Postgres + MinIO with healthchecks.
+- [ ] `make train-docker` runs training in the container with `data/` mounted as a volume.
+- [ ] `docker/README.md` with the image-size table and layer-ordering explanation.
+
+**D. Exercises**
+- [ ] Ex 1: build the serving image 3 ways (`python:3.12` single-stage / `slim` multi-stage / `slim` + `uv` no cache); record size + build time in `docker/README.md`.
+- [ ] Ex 2: change one Python line, rebuild; reorder until only the last layer rebuilds.
+- [ ] Ex 3: `Ctrl-C` test; fix with exec-form `ENTRYPOINT` or `tini`; explain.
+- [ ] Ex 4: run serving container non-root with `--read-only --tmpfs /tmp`.
+- [ ] Ex 5: `docker compose up` the tracking stack; point `train.py` at it; verify artefacts in MinIO.
+- [ ] Ex 6: `trivy image`; fix ≥ 1 finding by bumping base; pin base by digest.
+- [ ] Ex 7: `buildx` multi-arch (`linux/amd64,linux/arm64`); inspect the manifest list.
+
+**E. Break-it drills**
+- [ ] Copy the whole repo into the context once; watch context size/build time; fix with `.dockerignore`.
+- [ ] Install CUDA torch wheels into the CPU image once; note the +2 GB; switch to CPU index URL.
+- [ ] Bake a fake secret via `ENV`; find it with `docker history`; move to build secrets / runtime env.
+- [ ] `docker system df` → `docker system prune`; explain what was safe.
+
+**F. Interview & close-out**
+- [ ] Answer the 5 interview questions aloud; record once.
+- [ ] Tick all 3 "You can claim it when" boxes.
+- [ ] 10-line "what I learned" in `docs/notes/stage-3.md`.
+- [ ] Stage 3 ✅ in tracker + `README.md`; commit via PR.
+
+
 **Skill claimed:** Docker
 
 **Learn (deeply):**
@@ -298,6 +477,51 @@ orbiteye/
 
 ## Stage 4 — CI/CD  (Week 5)
 
+### ✅ Your tasks — Stage 4
+
+**A. Setup**
+- [ ] GHCR write permission for `GITHUB_TOKEN` understood (`packages: write`).
+- [ ] Frozen tiny eval subset committed to DVC and pushed to the remote.
+- [ ] `docs/notes/stage-4.md` created.
+
+**B. Concepts & notes** → `docs/notes/stage-4.md`
+- [ ] CI vs CD vs continuous deployment; pipeline as quality gates; shift left.
+- [ ] GitHub Actions model: workflows, triggers, jobs, runners, steps, `needs`, matrices, `concurrency`, caching, artefacts, secrets vs variables, environments/required reviewers, `GITHUB_TOKEN` permissions, reusable workflows, composite actions.
+- [ ] ML gates: data contracts, smoke training, quality gate vs frozen set, metric diff vs `main`, model card generation.
+- [ ] Container CI: `build-push-action`, `type=gha` cache, semver from tags, OCI labels.
+- [ ] Continuous training: scheduled vs triggered retraining; why humans approve promotion.
+- [ ] Security: least privilege, pin actions by SHA, OIDC (stage 5), Dependabot; `pull_request_target` risks.
+
+**C. Build**
+- [ ] `.github/workflows/ci.yml` (on PR): `lint → test → smoke-train → quality-gate → build`.
+- [ ] `.github/workflows/release.yml` (on `v*.*.*` tag): multi-arch build, tag version + SHA, push to GHCR, GitHub Release with `metrics.json`.
+- [ ] `.github/workflows/nightly-train.yml` (`schedule` + `workflow_dispatch`): retrain, log to MLflow, open PR if better than Production.
+- [ ] PR comment step posting metrics + confusion matrix (CML or `gh api` script).
+- [ ] Branch protection: required checks, no direct pushes, linear history.
+- [ ] Dependabot config for actions + pip; every third-party action pinned to a commit SHA.
+- [ ] Enable the CI / Release badges in `README.md`.
+
+**D. Exercises**
+- [ ] Ex 1: `ci.yml` quality gate downloads frozen eval set from DVC remote, evaluates smoke model, fails under threshold; uses `needs:` + job outputs.
+- [ ] Ex 2: add `uv`/pip + Docker layer caching; record pipeline time before/after in notes.
+- [ ] Ex 3: PR comment with metrics + confusion matrix image.
+- [ ] Ex 4: `release.yml` produces a versioned image + Release with zero manual steps.
+- [ ] Ex 5: `nightly-train.yml` runs and opens a PR.
+- [ ] Ex 6: try pushing directly to `main`; get rejected.
+- [ ] Ex 7: SHA-pin all actions; Dependabot enabled.
+
+**E. Break-it drills**
+- [ ] Open a PR with a deliberately bad config; watch the quality gate block it; fix; merge. **Keep the link** (Appendix A evidence).
+- [ ] Make a test flaky via nondeterminism; fix with seeds + tiny fixed subset + range asserts.
+- [ ] Keep PR CI under 10 min; push heavy work to nightly.
+
+**F. Interview & close-out**
+- [ ] Answer the 5 interview questions aloud; record once.
+- [ ] Tick all 3 "You can claim it when" boxes.
+- [ ] 10-line "what I learned" in `docs/notes/stage-4.md`.
+- [ ] Stage 4 ✅ in tracker + `README.md`; commit via PR.
+
+
 **Skill claimed:** CI/CD
 
 **Learn:**
@@ -358,6 +582,55 @@ orbiteye/
 ---
 
 ## Stage 5 — Cloud: AWS in depth, GCP and Azure by mapping  (Week 6–7)
+
+### ✅ Your tasks — Stage 5
+
+**A. Setup**
+- [ ] `awscli`, `terraform`, `gcloud`, `az` installed and authenticated.
+- [ ] AWS: MFA on root, admin IAM user, US$50 budget alert. Never use root again.
+- [ ] GCP and Azure free-credit accounts active with budget alerts.
+- [ ] Read Appendix B (cost checklist) and keep it open during every cloud session.
+- [ ] `docs/notes/stage-5.md` created.
+
+**B. Concepts & notes** → `docs/notes/stage-5.md`
+- [ ] Shared responsibility; regions/AZs; IaaS/PaaS/SaaS placement of EC2, EKS, Cloud Run, SageMaker.
+- [ ] IAM: principals, identity vs resource policies, roles & trust policies, `AssumeRole`, instance profiles, least privilege, OIDC federation.
+- [ ] Networking: VPC, public/private subnets, route tables, IGW, NAT, SGs vs NACLs, SSM Session Manager instead of port 22.
+- [ ] S3: prefixes, storage classes, lifecycle, versioning, presigned URLs, consistency, cost.
+- [ ] Compute: instance families, spot vs on-demand, AMIs, user data, EBS vs instance store.
+- [ ] CloudWatch, Cost Explorer, Budgets, tagging.
+- [ ] Terraform: providers, resources, data sources, vars/outputs, state & remote state with locking, plan vs apply, modules, workspaces, import, drift.
+- [ ] Fill in the AWS/GCP/Azure mapping table with one difference per row.
+
+**C. Build**
+- [ ] `infra/aws/`: S3 (versioning + lifecycle), ECR (scan-on-push, keep 10), OIDC provider + role scoped to `repo:alichr/orbiteye:*`, remote state bucket + DynamoDB lock, `c6i.xlarge` in private subnet via SSM with instance profile.
+- [ ] `infra/gcp/`: Artifact Registry, Cloud Run service, Vertex AI custom job.
+- [ ] `infra/azure/`: ACR, Container Apps, Azure ML command job.
+- [ ] DVC remote switched to S3; `ci.yml` assumes OIDC role, pulls eval set from S3, pushes image to ECR. No stored cloud secrets.
+- [ ] MLflow server on EC2 (compose: Postgres + S3 artefact store), reached via SSM port-forward.
+- [ ] Screenshots of live URLs on all three clouds in `docs/assets/`; then everything destroyed.
+
+**D. Exercises**
+- [ ] Ex 1: account hardening + budget (see A).
+- [ ] Ex 2: Terraform (a) S3 → (b) ECR → (c) OIDC role → (d) remote state → (e) EC2, one `apply` each.
+- [ ] Ex 3: `dvc push` to S3; delete local cache; `dvc pull`.
+- [ ] Ex 4: `ci.yml` on OIDC (`aws-actions/configure-aws-credentials`).
+- [ ] Ex 5: remote MLflow on EC2; local training logs to it.
+- [ ] Ex 6: one full training on EC2 via `user_data`; run appears in MLflow; `terraform destroy` the instance.
+- [ ] Ex 7: GCP Cloud Run + Vertex job; Azure Container Apps + Azure ML job; Terraform, screenshot, destroy.
+- [ ] Ex 8: check Cost Explorer daily for two weeks; write down every line item.
+
+**E. Break-it drills**
+- [ ] Change a security group in the console; `terraform plan` shows drift; revert.
+- [ ] Point the OIDC trust policy at the wrong repo; CI fails clearly; fix.
+- [ ] Audit for orphaned NAT gateways / EBS / LBs / static IPs after every `destroy`.
+
+**F. Interview & close-out**
+- [ ] Answer the 6 interview questions aloud; record once.
+- [ ] Tick all 3 "You can claim it when" boxes.
+- [ ] 10-line "what I learned" in `docs/notes/stage-5.md`.
+- [ ] Stage 5 ✅ in tracker + `README.md`; commit via PR. **Confirm the bill.**
+
 
 **Skill claimed:** AWS, GCP, Azure
 
@@ -441,6 +714,52 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 
 ## Stage 6 — Model serving and Kubernetes  (Week 8–9)
 
+### ✅ Your tasks — Stage 6
+
+**A. Setup**
+- [ ] `kind`, `helm`, `k6` installed; `kind create cluster` works.
+- [ ] `fastapi`, `uvicorn`, `onnxruntime`, `onnx` in the venv.
+- [ ] `docs/notes/stage-6.md` created.
+
+**B. Concepts & notes** → `docs/notes/stage-6.md`
+- [ ] Serving: sync/async/batch, latency vs throughput, dynamic batching, cold start, model-loading strategies, versioned endpoints, input validation, why ONNX Runtime, threads, warm-up.
+- [ ] K8s architecture: control plane vs nodes; reconciliation loop; declarative state.
+- [ ] Objects: Pod, Deployment → ReplicaSet → Pod, Service types & ClusterIP DNS, Ingress, ConfigMap/Secret, Namespace, ServiceAccount + RBAC, PV/PVC, Job/CronJob.
+- [ ] Probes, requests/limits & QoS, rolling updates & rollbacks, HPA & metrics-server, Helm (chart, values, release, revisions).
+- [ ] Failure states: `ImagePullBackOff`, `CrashLoopBackOff`, `Pending`, `OOMKilled`.
+
+**C. Build**
+- [ ] `src/orbiteye/export.py`: PyTorch → ONNX export (static shape `[1,3,64,64]`).
+- [ ] `serving/app.py`: loads ONNX from S3/registry by version at startup, `/predict`, `/healthz`, `/readyz`, `/metrics`, warm-up; tests with `TestClient`.
+- [ ] `serving/loadtest.js` (k6) and a load-test report with p50/p95/p99 at N replicas.
+- [ ] `deploy/kind/`: cluster config + raw manifests (Deployment, Service, ConfigMap, HPA).
+- [ ] `deploy/helm/orbiteye/`: chart with probes, resources, HPA, RBAC, values.
+- [ ] `release.yml` runs `helm upgrade --install` on tag.
+- [ ] `infra/aws/eks.tf` using `terraform-aws-modules/eks`, IRSA for S3, ALB Ingress.
+- [ ] HPA scaling screenshot in `docs/assets/`; serving numbers in the README results table.
+
+**D. Exercises**
+- [ ] Ex 1: `serving/app.py` (see C).
+- [ ] Ex 2: k6 at 10/50/200 VUs; record p50/p95/p99 + CPU; tune `intra_op_num_threads`; compare.
+- [ ] Ex 3: 3-node kind cluster; raw manifests first, then Helm chart; keep both.
+- [ ] Ex 4: memory limit too low → `OOMKilled`; CPU limit too low → latency; fix; explain.
+- [ ] Ex 5: `/readyz` → 500; pod leaves Service endpoints but stays alive.
+- [ ] Ex 6: roll out a bad tag; rollout stalls; `helm rollback`; describe both ReplicaSets.
+- [ ] Ex 7: metrics-server + k6; `kubectl get hpa -w` scales 1 → 4 → 1.
+- [ ] Ex 8: EKS via Terraform; chart with IRSA; ALB; same load test; screenshot; **destroy same day**.
+- [ ] Ex 9: `kubectl` fluency drill without docs.
+
+**E. Break-it drills**
+- [ ] `kubectl delete pod`; explain what recreated it. `kubectl drain` a node; watch pods move.
+- [ ] Cause `ImagePullBackOff`, `CrashLoopBackOff`, `Pending`; diagnose each from `describe` + `logs` only.
+
+**F. Interview & close-out**
+- [ ] Answer the interview questions aloud; record once.
+- [ ] Tick all 3 "You can claim it when" boxes.
+- [ ] 10-line "what I learned" in `docs/notes/stage-6.md`.
+- [ ] Stage 6 ✅ in tracker + `README.md`; commit via PR. **EKS destroyed.**
+
+
 **Skill claimed:** Kubernetes, "deploy" half of end-to-end
 
 **Learn (deeply):**
@@ -509,6 +828,54 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 
 ## Stage 7 — Model monitoring  (Week 10)
 
+### ✅ Your tasks — Stage 7
+
+**A. Setup**
+- [ ] `prometheus-fastapi-instrumentator`, `evidently` in the venv.
+- [ ] `kube-prometheus-stack` and Loki Helm repos added.
+- [ ] Email or Slack webhook for Alertmanager.
+- [ ] `docs/notes/stage-7.md` created.
+
+**B. Concepts & notes** → `docs/notes/stage-7.md`
+- [ ] Why ML fails silently; software vs model monitoring.
+- [ ] Three layers: system, service (RED/USE), model metrics.
+- [ ] Prometheus model: pull, metric types, labels/cardinality, PromQL `rate()`/histograms, Pushgateway, ServiceMonitor; Alertmanager routing/silences.
+- [ ] Drift: covariate vs concept vs label shift; KS/JSD/PSI; reference vs current windows; thresholds.
+- [ ] Structured logging, request IDs, Loki; SLI/SLO/error budget; runbooks.
+- [ ] Continuous training loop: alert → retrain → gate → human approval.
+
+**C. Build**
+- [ ] Instrumented `serving/app.py`: latency histogram, status counter, in-flight gauge, model-version label, mean-confidence gauge, per-class prediction counters.
+- [ ] `deploy/monitoring/`: kube-prometheus-stack values, `ServiceMonitor`, alert rules, Grafana dashboard JSON, Loki config.
+- [ ] Inference logging as JSON to stdout → Loki; shipped to S3 for the drift job.
+- [ ] Drift `CronJob`: pulls 24 h of logs from S3, Evidently `DataDriftPreset` + image-statistic tests, HTML report to S3, `drift_score` to Pushgateway.
+- [ ] Drift simulation script (haze / winter brightness / channel swap).
+- [ ] Drift alert → `repository_dispatch` → `nightly-train.yml` → PR through quality gate.
+- [ ] `docs/RUNBOOK.md`: per alert → meaning, causes, first 3 commands, escalation.
+- [ ] Grafana screenshot in `README.md`.
+
+**D. Exercises**
+- [ ] Ex 1: instrument the app (see C).
+- [ ] Ex 2: kube-prometheus-stack in kind; PromQL for p95 + error rate; dashboard JSON committed.
+- [ ] Ex 3: alert rules (p95 > 300 ms/5 min, error rate > 1 %, class collapse, drift > threshold); route via Alertmanager; trigger each deliberately.
+- [ ] Ex 4: JSON inference logs → Loki; query by request ID.
+- [ ] Ex 5: drift CronJob end to end.
+- [ ] Ex 6: run the 3 drift simulations (2,000 requests each); record which signal fired first in notes.
+- [ ] Ex 7: drift alert triggers retraining PR.
+- [ ] Ex 8: `RUNBOOK.md` written.
+
+**E. Break-it drills**
+- [ ] Kill Prometheus; see what is lost; add persistence.
+- [ ] Silence an alert and "forget"; discover the gap; add a silence-expiry check.
+- [ ] Add a high-cardinality label (e.g. request ID) to a metric; watch memory; remove it.
+
+**F. Interview & close-out**
+- [ ] Answer the interview questions aloud; record once.
+- [ ] Tick both "You can claim it when" boxes.
+- [ ] 10-line "what I learned" in `docs/notes/stage-7.md`.
+- [ ] Stage 7 ✅ in tracker + `README.md`; commit via PR.
+
+
 **Skill claimed:** model monitoring
 
 **Learn:**
@@ -574,6 +941,60 @@ For each of GCP and Azure, using free credits: push your serving image to their 
 ---
 
 ## Stage 8 — Edge deployment: Raspberry Pi target, embedded and onboard-satellite constraints  (Week 11–12)
+
+### ✅ Your tasks — Stage 8
+
+**A. Setup**
+- [ ] `qemu` installed; `docker buildx` can target `linux/arm64`; `docker run --platform linux/arm64 python:3.12-slim uname -m` prints `aarch64`.
+- [ ] `onnxsim`, `onnxruntime` (quantisation tools), `cryptography` in the venv.
+- [ ] Raspberry Pi OS Lite 64-bit image downloaded for `qemu-system-aarch64`.
+- [ ] `docs/notes/stage-8.md` created.
+
+**B. Concepts & notes** → `docs/notes/stage-8.md`
+- [ ] CPU inference cost model; batch size 1; thread scaling on 4 small cores.
+- [ ] Quantisation: FP32/FP16/INT8, symmetric vs asymmetric, per-tensor vs per-channel, static vs dynamic vs QAT, accuracy loss, ops that quantise badly.
+- [ ] Distillation & pruning.
+- [ ] ONNX opsets, graph optimisation, `onnxsim`, execution providers, session options; when TFLite instead.
+- [ ] QEMU user-mode vs system emulation; why emulated timings are unreliable; multi-arch manifests; arm64 wheel availability.
+- [ ] Embedded Linux: Pi OS Lite, first boot, systemd hardening (`ProtectSystem`, `MemoryMax`, `WatchdogSec` + `sd_notify`), read-only root, journald caps, SD wear, thermal, power estimation.
+- [ ] OTA design: Ed25519 signatures, manifest hashes, A/B slots, self-test, rollback, resumable downloads, contact windows.
+- [ ] Onboard-satellite context: radiation & watchdogs, power budgets, no interactive access, Φ-sat-1, OPS-SAT.
+
+**C. Build** (all in `edge/`, all on the Mac)
+- [ ] `edge/export_and_quantize.py` → `model_fp32.onnx`, `model_int8.onnx`, `model_distilled_int8.onnx`.
+- [ ] `edge/benchmark.py`: accuracy, p50/p95 latency, RSS, size, threads sweep; native + arm64 emulated.
+- [ ] `edge/Dockerfile.pi` (arm64 slim + onnxruntime), pushed as multi-arch to GHCR.
+- [ ] `edge/onboard/`: offline service loop (local sensor folder, per-frame time budget, append-only telemetry, no sockets).
+- [ ] `edge/onboard/orbiteye.service` (watchdog, hardening) + `edge/provision/firstboot.sh` + `edge/provision/README.md`.
+- [ ] `edge/ground/`: `sign_bundle.py`, `downlink.py` (verify → inactive slot → self-test → switch/rollback), `uplink.py`.
+- [ ] `edge/tests/`: signature verification, A/B switching, rollback, time budget, no-network, power-cut mid-install.
+- [ ] `.github/workflows/edge.yml`: build arm64 image, run edge tests under emulation, 10-min soak, publish table.
+- [ ] `edge/README.md` + edge results table in root `README.md`; enable the edge badge.
+
+**D. Exercises**
+- [ ] Ex 1: ONNX export static `[1,3,64,64]`; `onnxsim`; outputs match PyTorch within 1e-4 on 100 images.
+- [ ] Ex 2: static INT8 (500 calibration images) vs dynamic; accuracy deltas written down.
+- [ ] Ex 3: distil to MobileNetV3-small (T=4, α=0.7); quantise; fill the FP32/INT8/distilled table.
+- [ ] Ex 4: threads sweep 1/2/4 under emulation; relative numbers only; explain.
+- [ ] Ex 5: `Dockerfile.pi` via `buildx`; run with `--platform linux/arm64`; tests pass inside.
+- [ ] Ex 6: boot Pi OS Lite in `qemu-system-aarch64`; SSH; `firstboot.sh`; unit installed; starts on boot; `kill -9` → watchdog restarts; journald caps checked.
+- [ ] Ex 7: onboard loop with 200 ms budget; budget-miss telemetry; `strace -f -e trace=network` shows no socket.
+- [ ] Ex 8: OTA cycle with all three failure tests (tampered signature, corrupt model rollback, power-cut).
+- [ ] Ex 9: soak test: 10 min in CI, 24 h once locally; RSS growth < 5 %, zero budget misses.
+- [ ] Ex 10: energy per inference estimate (CPU time × 5 W) with assumption in README.
+
+**E. Break-it drills**
+- [ ] Inspect the quantised graph for ops that fell back to FP32.
+- [ ] Calibrate on mismatched-brightness images; watch INT8 accuracy collapse; fix with representative set.
+- [ ] Configure watchdog without `sd_notify` → restart loop; then fix.
+- [ ] Flip one byte in the signed model; verification fails *before* load.
+
+**F. Interview & close-out**
+- [ ] Answer the interview questions aloud; record once.
+- [ ] Tick all 4 "You can claim it when" boxes.
+- [ ] 10-line "what I learned" in `docs/notes/stage-8.md`.
+- [ ] Stage 8 ✅ in tracker + `README.md`; commit via PR.
+
 
 **Skill claimed:** edge deployment (embedded ARM devices, onboard/offline inference systems)
 
@@ -699,6 +1120,36 @@ and that the image is ready to flash. That is a strong, honest answer; the Jetso
 ---
 
 ## Stage 9 — Capstone: make it claimable  (final week)
+
+### ✅ Your tasks — Stage 9
+
+**A. Setup**
+- [ ] Screen-recording tool ready; all clouds recreatable via `terraform apply`.
+
+**B. Concepts & notes**
+- [ ] Fill in Appendix C glossary with your own one-line definitions.
+- [ ] Reread every `docs/notes/stage-N.md` "what I learned" and list your 5 weakest topics; revise them.
+
+**C. Build**
+- [ ] `README.md`: architecture diagram, all three results tables filled from scripts, all status rows ✅, screenshots.
+- [ ] `docs/adr/`: 5–8 ADRs (ONNX Runtime vs TorchServe, INT8 on edge, registry-pull vs bake-in, OIDC, quality gate in CI, Pi as satellite stand-in…).
+- [ ] `docs/DESIGN.md` and `docs/RUNBOOK.md` final pass.
+- [ ] 3-minute demo video: PR → CI → release → k8s → Grafana → drift → retrain → signed bundle → emulated device. Link from README.
+- [ ] One blog / LinkedIn post per major stage; link from README and CV.
+- [ ] Every Appendix A evidence row has a clickable link.
+
+**D. Exercises**
+- [ ] Do a full fresh-clone run-through of the Quickstart on a clean machine or container; fix everything that breaks.
+- [ ] Recreate the whole AWS stack with `terraform apply`, record the demo, `terraform destroy`.
+
+**E. Break-it drills**
+- [ ] Ask a friend (or an AI) to interview you for 30 min using the interview questions from all stages, without notes.
+
+**F. Close-out**
+- [ ] Tear down all cloud resources; confirm zero spend next month.
+- [ ] Write the three CV bullets below into your CV, truthfully.
+- [ ] Stage 9 ✅ in tracker + `README.md`; final commit; tag `v1.0.0`.
+
 
 - README with architecture diagram, the three results tables (baseline, serving load test, edge optimisation), and a 3-minute demo video.
 - `docs/` with `DESIGN.md`, `RUNBOOK.md`, `ADR/` (architecture decision records, 5–8 short ones: "why ONNX Runtime not TorchServe", "why INT8 on the edge", etc.). Interviewers love ADRs.

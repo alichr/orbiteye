@@ -11,6 +11,28 @@ The Stage 1 Linux lab is a free-tier EC2 instance in AWS Sydney (`ap-southeast-2
 | Security group | `sg-0f6fdf53910772be4` — port 22 open **only from my home IP** |
 | AWS CLI profile | `orbiteye` (IAM user `ali-admin`; root is not used for daily work) |
 
+## Resume a session (start here each day)
+
+The instance is normally **stopped** between sessions. Stopped = no compute charges; only the 20 GB disk remains, and it is inside the free tier.
+
+From the repo root on the Mac:
+
+```bash
+scripts/lab.sh start    # starts the instance, waits, writes the new public IP into ~/.ssh/config
+ssh orbiteye-lab        # log in
+```
+
+or in one step: `scripts/lab.sh ssh`.
+
+When you finish for the day:
+
+```bash
+exit                    # leave the Linux box (Ctrl-b d first if you want to keep a tmux session)
+scripts/lab.sh stop     # stop the instance
+```
+
+Check state at any time with `scripts/lab.sh status`. The public IP changes on every start; the script handles that, so you never edit `~/.ssh/config` by hand.
+
 ## Log in
 
 Open Terminal on the Mac and run:

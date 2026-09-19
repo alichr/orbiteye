@@ -10,3 +10,12 @@ One file per stage, written while working through [`docs/LEARNING_PLAN.md`](../L
 | `linux-lab.md` | How to log in to, use, stop/start and tear down the Stage 1 EC2 Linux lab |
 
 Notes are part of the evidence a reviewer can read, so keep them honest and in plain language.
+
+## Where I am
+
+| Stage | Group | Status |
+|---|---|---|
+| 1 — Linux + Git | A. Setup | ✅ done (venv, protected `main`, EC2 lab) |
+| 1 — Linux + Git | B. Concepts & notes | ⬜ **next**: write `stage-1.md` (Linux, Git, Python packaging concepts in my own words) |
+| 1 — Linux + Git | C. Build | ⬜ repo skeleton via PR |
+| 1 — Linux + Git | D–F | ⬜ |

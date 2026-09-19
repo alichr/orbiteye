@@ -207,7 +207,7 @@ Create free accounts now so they are ready when needed: GitHub (done), AWS (free
 
 **🧰 A. Setup**
 - [x] Python 3.12 venv active; `ruff`, `pre-commit`, `pytest`, `dvc` installed via `uv`.
-- [ ] Launch a free-tier `t3.micro` Ubuntu EC2 instance (key-pair SSH). This is your Linux lab for the whole stage.
+- [x] Launch a free-tier `t3.micro` Ubuntu EC2 instance (key-pair SSH). This is your Linux lab for the whole stage. *(2026-09-19: Ubuntu 24.04 in ap-southeast-2, SSH from own IP only, `ssh orbiteye-lab`; IAM admin user created early, root retired.)*
 - [x] Confirm `main` on GitHub is protected: PRs required, no direct pushes.
 
 **📝 B. Concepts & notes** → `docs/notes/stage-1.md`

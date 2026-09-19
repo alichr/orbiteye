@@ -206,9 +206,9 @@ Create free accounts now so they are ready when needed: GitHub (done), AWS (free
 ### ✅ Your tasks — Stage 1
 
 **🧰 A. Setup**
-- [ ] Python 3.12 venv active; `ruff`, `pre-commit`, `pytest`, `dvc` installed via `uv`.
+- [x] Python 3.12 venv active; `ruff`, `pre-commit`, `pytest`, `dvc` installed via `uv`.
 - [ ] Launch a free-tier `t3.micro` Ubuntu EC2 instance (key-pair SSH). This is your Linux lab for the whole stage.
-- [ ] Confirm `main` on GitHub is protected: PRs required, no direct pushes.
+- [x] Confirm `main` on GitHub is protected: PRs required, no direct pushes.
 
 **📝 B. Concepts & notes** → `docs/notes/stage-1.md`
 - [ ] Linux: filesystem hierarchy, users/groups/permissions/sudo, processes & signals (SIGTERM vs SIGKILL), stdin/stdout/stderr & redirection, exit codes, env vs shell variables, `PATH`, symlinks, daemons, systemd units & `journalctl`, SSH keys & `~/.ssh/config`, `apt`, `df`/`du`, `ip`/`ss`/`curl`/ports/`/etc/hosts`, cron syntax.

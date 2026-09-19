@@ -145,7 +145,7 @@ The ML is intentionally boring. All the learning is in the lifecycle around it.
 - [x] Install `azure-cli` (can wait until stage 5).
 - [x] `uv python install 3.12`; create `.venv`; install the package list below.
 - [x] Run the sanity line: `docker run --rm hello-world && kind version && kubectl version --client && terraform -version`.
-- [ ] Create accounts: AWS (set a **US$50 budget alarm immediately**) and Azure (US$200 credits).
+- [x] Create accounts: AWS (set a **US$50 budget alarm immediately**) and Azure (US$200 credits). *(Done 2026-09-19. AWS: $50 budget, Free Tier + CloudWatch billing alerts, root passkey MFA. Azure: free account, $50 budget at subscription scope.)*
 - [x] Create `docs/notes/` folder in the repo (one `stage-N.md` file per stage will live here).
 - [ ] Read "How to study each stage" and "Weekly rhythm" below and block the hours in your calendar.
 

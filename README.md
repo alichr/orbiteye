@@ -205,7 +205,7 @@ The project was built in deliberate stages, one skill at a time. Each stage has 
 
 | # | Stage | Key artefacts | Status |
 |---|---|---|---|
-| 1 | Linux & Git foundations | repo skeleton, pre-commit, PR workflow | ⬜ |
+| 1 | Linux & Git foundations | repo skeleton, pre-commit, PR workflow | 🟨 |
 | 2 | ML design, DVC, MLflow | `DESIGN.md`, `dvc.yaml`, tracked baseline | ⬜ |
 | 3 | Docker | train/serve images, compose tracking stack | ⬜ |
 | 4 | CI/CD | `ci.yml`, `release.yml`, quality gate | ⬜ |

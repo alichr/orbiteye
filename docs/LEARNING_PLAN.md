@@ -8,7 +8,7 @@
 [![Duration](https://img.shields.io/badge/duration-10–12_weeks-informational)](#-weekly-rhythm-810-h)
 [![Effort](https://img.shields.io/badge/effort-8–10_h%2Fweek-informational)](#-weekly-rhythm-810-h)
 [![Cloud budget](https://img.shields.io/badge/cloud_budget-US%2440–70-success)](#-appendix-b--cost-control-checklist)
-[![Progress](https://img.shields.io/badge/progress-0%2F9-lightgrey)](#-master-task-tracker-start-here)
+[![Progress](https://img.shields.io/badge/progress-stage_1_of_9-yellow)](#-master-task-tracker-start-here)
 
 **[Tracker](#-master-task-tracker-start-here) · [Project](#project) · [Setup](#setup) · [Stage 1](#stage-1) · [Stage 2](#stage-2) · [Stage 3](#stage-3) · [Stage 4](#stage-4) · [Stage 5](#stage-5) · [Stage 6](#stage-6) · [Stage 7](#stage-7) · [Stage 8](#stage-8) · [Stage 9](#stage-9) · [Appendices](#appendix-a)**
 
@@ -46,8 +46,8 @@ Every stage below opens with a **"Your tasks"** checklist: every single thing yo
 
 | # | Stage | Weeks | Jump to tasks | Status |
 |---|---|---|---|---|
-| 0 | 🧰 Prerequisites & Mac setup | Day 1 | [Stage 0 tasks](#-your-tasks--stage-0-setup) | ⬜ |
-| 1 | 🐧 Linux + Git repo skeleton | 1 | [Stage 1 tasks](#-your-tasks--stage-1) | ⬜ |
+| 0 | 🧰 Prerequisites & Mac setup | Day 1 | [Stage 0 tasks](#-your-tasks--stage-0-setup) | ✅ |
+| 1 | 🐧 Linux + Git repo skeleton | 1 | [Stage 1 tasks](#-your-tasks--stage-1) | 🟨 |
 | 2 | 🧬 ML design, DVC, MLflow | 2–3 | [Stage 2 tasks](#-your-tasks--stage-2) | ⬜ |
 | 3 | 🐳 Docker | 4 | [Stage 3 tasks](#-your-tasks--stage-3) | ⬜ |
 | 4 | 🔁 CI/CD | 5 | [Stage 4 tasks](#-your-tasks--stage-4) | ⬜ |
@@ -147,7 +147,7 @@ The ML is intentionally boring. All the learning is in the lifecycle around it.
 - [x] Run the sanity line: `docker run --rm hello-world && kind version && kubectl version --client && terraform -version`.
 - [x] Create accounts: AWS (set a **US$50 budget alarm immediately**) and Azure (US$200 credits). *(Done 2026-09-19. AWS: $50 budget, Free Tier + CloudWatch billing alerts, root passkey MFA. Azure: free account, $50 budget at subscription scope.)*
 - [x] Create `docs/notes/` folder in the repo (one `stage-N.md` file per stage will live here).
-- [ ] Read "How to study each stage" and "Weekly rhythm" below and block the hours in your calendar.
+- [x] Read "How to study each stage" and "Weekly rhythm" below and block the hours in your calendar.
 
 ### 💻 One-time Mac setup (do this on day 1)
 

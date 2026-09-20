@@ -211,7 +211,7 @@ Create free accounts now so they are ready when needed: GitHub (done), AWS (free
 - [x] Confirm `main` on GitHub is protected: PRs required, no direct pushes.
 
 **📝 B. Concepts & notes** → `docs/notes/stage-1.md`
-- [ ] Linux: filesystem hierarchy, users/groups/permissions/sudo, processes & signals (SIGTERM vs SIGKILL), stdin/stdout/stderr & redirection, exit codes, env vs shell variables, `PATH`, symlinks, daemons, systemd units & `journalctl`, SSH keys & `~/.ssh/config`, `apt`, `df`/`du`, `ip`/`ss`/`curl`/ports/`/etc/hosts`, cron syntax.
+- [x] ~~Linux: filesystem hierarchy, users/groups/permissions/sudo, processes & signals (SIGTERM vs SIGKILL), stdin/stdout/stderr & redirection, exit codes, env vs shell variables, `PATH`, symlinks, daemons, systemd units & `journalctl`, SSH keys & `~/.ssh/config`, `apt`, `df`/`du`, `ip`/`ss`/`curl`/ports/`/etc/hosts`, cron syntax.~~ *(Skipped by choice on 2026-09-20: will learn on demand during the EC2 exercises (D) and Stage 8. Revisit if Linux interview questions feel weak.)*
 - [ ] Git: working tree / index / HEAD, commits as snapshots, branches as pointers, fast-forward vs merge vs rebase, detached HEAD, reflog, remotes & tracking branches, lightweight vs annotated tags, `.gitignore` semantics, why big binaries don't belong in git, what a PR is.
 - [ ] Python packaging: `pyproject.toml`, editable installs, lockfiles, virtual envs, entry points.
 
